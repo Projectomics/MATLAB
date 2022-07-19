@@ -1,0 +1,3 @@
+# Ignore all unused code
+_unused
+./lib/_unused
