@@ -1,0 +1,194 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Verification of the Upper Bound Theorem (McMullen, 1970) in 3 dimensions</title><meta name="generator" content="MATLAB 8.0"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-11-27"><meta name="DC.source" content="Upper_Bound_Theorem_3D.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, tt, code { font-size:12px; }
+pre { margin:0px 0px 20px; }
+pre.error { color:red; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>Verification of the Upper Bound Theorem (McMullen, 1970) in 3 dimensions</h1><!--introduction--><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Introduction</a></li><li><a href="#2">Initial data</a></li><li><a href="#4">Processing</a></li><li><a href="#5">Post-processing</a></li><li><a href="#9">Plots</a></li><li><a href="#10">Contact author</a></li></ul></div><h2>Introduction<a name="1"></a></h2><p>The cyclic polytope <img src="Upper_Bound_Theorem_3D_eq49788.png" alt="$CP(n,d)$"> may be defined as the convex hull of <img src="Upper_Bound_Theorem_3D_eq25947.png" alt="$n$"> vertices on the moment curve <img src="Upper_Bound_Theorem_3D_eq07344.png" alt="$(t, t^2, t^3, ..., t^d)$">. The precise choice of which <img src="Upper_Bound_Theorem_3D_eq25947.png" alt="$n$"> points on this curve are selected is irrelevant for the combinatorial structure of this polytope. The number of <img src="Upper_Bound_Theorem_3D_eq78150.png" alt="$(d-1)$"> -dimensional facets (faces) of <img src="Upper_Bound_Theorem_3D_eq49788.png" alt="$CP(n,d)$"> is given by the formula:</p><p><img src="Upper_Bound_Theorem_3D_eq21192.png" alt="$$f_i(\Delta(n,d)) = \frac{n}{n - \frac{d}{2}} {{n - \frac{d}{2}} \choose&#xA;n-d} \hspace{0.2in} d \quad \textrm{even} \quad $$"></p><p><img src="Upper_Bound_Theorem_3D_eq56227.png" alt="$$f_i(\Delta(n,d)) = 2 {{n - \frac{d+1}{2}} \choose n-d} \hspace{0.2in} d&#xA;\quad \textrm{odd} \quad $$"></p><p>The upper bound theorem states that cyclic polytopes have the largest possible number of faces among all convex polytopes with a given dimension and number of vertices.</p><h2>Initial data<a name="2"></a></h2><p>Set the points the convex hull of which is to be calculated.</p><pre class="codeinput">t=(0:0.1:2)';
+points=[t,t.^2,t.^3];
+</pre><p>Plot the point set in blue circles.</p><pre class="codeinput">figure(<span class="string">'Name'</span>,<span class="string">'Point set'</span>,<span class="string">'NumberTitle'</span>,<span class="string">'off'</span>)
+scatter3(points(:,1),points(:,2),points(:,3),<span class="keyword">...</span>
+    <span class="string">'marker'</span>,<span class="string">'o'</span>,<span class="string">'MarkerEdgeColor'</span>,[0 0 1],<span class="string">'LineWidth'</span>,2)
+xlabel(<span class="string">'x'</span>,<span class="string">'FontSize'</span>,13);
+ylabel(<span class="string">'y'</span>,<span class="string">'FontSize'</span>,13);
+zlabel(<span class="string">'z'</span>,<span class="string">'FontSize'</span>,13);
+title(<span class="string">'Point set'</span>,<span class="string">'FontSize'</span>,13)
+</pre><img vspace="5" hspace="5" src="Upper_Bound_Theorem_3D_01.png" alt=""> <h2>Processing<a name="4"></a></h2><p>Find the point identities defining each facet of the convex hull of the point set.</p><pre class="codeinput">chull1=convhull_nd(points);
+</pre><h2>Post-processing<a name="5"></a></h2><p>Find the number of the facets of the convex hull.</p><pre class="codeinput">nfacets1=size(chull1,1)
+</pre><pre class="codeoutput">
+nfacets1 =
+
+    38
+
+</pre><p>Calculate the number of points the convex hull of which was calculated, as well as their dimension.</p><pre class="codeinput">[n,d]=size(points)
+</pre><pre class="codeoutput">
+n =
+
+    21
+
+
+d =
+
+     3
+
+</pre><p>Calculate the maximum number of faces (2-dimensional facets) that a 3-dimensional convex hull (<img src="Upper_Bound_Theorem_3D_eq39128.png" alt="$$d=3$">) of 21 points can have.</p><pre class="codeinput">maxfacets=2*nchoosek(n-(d+1)/2,n-d)
+</pre><pre class="codeoutput">
+maxfacets =
+
+    38
+
+</pre><p>Check the validity of the Upper Bound Theorem.</p><pre class="codeinput"><span class="keyword">if</span> maxfacets&lt;nfacets1
+    error(<span class="string">'Upper Bound Theorem not satisfied'</span>)
+<span class="keyword">end</span>
+</pre><h2>Plots<a name="9"></a></h2><p>Plot the convex hull of the point set.</p><pre class="codeinput">figure(<span class="string">'Name'</span>,<span class="string">'Convex hull'</span>,<span class="string">'NumberTitle'</span>,<span class="string">'off'</span>)
+trisurf(chull1,points(:,1),points(:,2),points(:,3),<span class="keyword">...</span>
+    <span class="string">'FaceColor'</span>,[1 0.5 0],<span class="string">'EdgeColor'</span>,[0 0 1]);
+xlabel(<span class="string">'x'</span>,<span class="string">'FontSize'</span>,13);
+ylabel(<span class="string">'y'</span>,<span class="string">'FontSize'</span>,13);
+zlabel(<span class="string">'z'</span>,<span class="string">'FontSize'</span>,13);
+title(<span class="string">'Convex hull'</span>,<span class="string">'FontSize'</span>,13)
+</pre><img vspace="5" hspace="5" src="Upper_Bound_Theorem_3D_02.png" alt=""> <h2>Contact author<a name="10"></a></h2><pre>(c) 2014 by George Papazafeiropoulos
+First Lieutenant, Infrastructure Engineer, Hellenic Air Force
+Civil Engineer, M.Sc., Ph.D. candidate, NTUA</pre><p>Email: <a href="mailto:gpapazafeiropoulos@yahoo.gr">gpapazafeiropoulos@yahoo.gr</a></p><p>Website: <a href="http://users.ntua.gr/gpapazaf/">http://users.ntua.gr/gpapazaf/</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2012b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% Verification of the Upper Bound Theorem (McMullen, 1970) in 3 dimensions
+
+%% Introduction
+% The cyclic polytope $CP(n,d)$ may be defined as the convex hull of $n$
+% vertices on the moment curve $(t, t^2, t^3, ..., t^d)$. The precise
+% choice of which $n$ points on this curve are selected is irrelevant for
+% the combinatorial structure of this polytope. The number of
+% $(d-1)$ -dimensional facets (faces) of $CP(n,d)$ is given by the formula:
+%
+% $$f_i(\Delta(n,d)) = \frac{n}{n - \frac{d}{2}} {{n - \frac{d}{2}} \choose
+% n-d} \hspace{0.2in} d \quad \textrm{even} \quad $$
+%
+% $$f_i(\Delta(n,d)) = 2 {{n - \frac{d+1}{2}} \choose n-d} \hspace{0.2in} d
+% \quad \textrm{odd} \quad $$
+%
+% The upper bound theorem states that cyclic polytopes have the largest
+% possible number of faces among all convex polytopes with a given
+% dimension and number of vertices.
+
+%% Initial data
+% Set the points the convex hull of which is to be calculated.
+t=(0:0.1:2)';
+points=[t,t.^2,t.^3];
+%%
+% Plot the point set in blue circles.
+figure('Name','Point set','NumberTitle','off')
+scatter3(points(:,1),points(:,2),points(:,3),...
+    'marker','o','MarkerEdgeColor',[0 0 1],'LineWidth',2)
+xlabel('x','FontSize',13);
+ylabel('y','FontSize',13);
+zlabel('z','FontSize',13);
+title('Point set','FontSize',13)
+
+%% Processing
+% Find the point identities defining each facet of the convex hull of the
+% point set.
+chull1=convhull_nd(points);
+
+%% Post-processing
+% Find the number of the facets of the convex hull.
+nfacets1=size(chull1,1)
+%%
+% Calculate the number of points the convex hull of which was calculated,
+% as well as their dimension.
+[n,d]=size(points)
+%%
+% Calculate the maximum number of faces (2-dimensional facets) that a
+% 3-dimensional convex hull ($$d=3$) of 21 points can have.
+maxfacets=2*nchoosek(n-(d+1)/2,n-d)
+%%
+% Check the validity of the Upper Bound Theorem.
+if maxfacets<nfacets1
+    error('Upper Bound Theorem not satisfied')
+end
+
+%% Plots
+% Plot the convex hull of the point set.
+figure('Name','Convex hull','NumberTitle','off')
+trisurf(chull1,points(:,1),points(:,2),points(:,3),...
+    'FaceColor',[1 0.5 0],'EdgeColor',[0 0 1]);
+xlabel('x','FontSize',13);
+ylabel('y','FontSize',13);
+zlabel('z','FontSize',13);
+title('Convex hull','FontSize',13)
+
+%% Contact author
+%
+%  (c) 2014 by George Papazafeiropoulos
+%  First Lieutenant, Infrastructure Engineer, Hellenic Air Force
+%  Civil Engineer, M.Sc., Ph.D. candidate, NTUA
+%
+% Email: gpapazafeiropoulos@yahoo.gr
+%
+% Website: http://users.ntua.gr/gpapazaf/
+%
+
+
+
+##### SOURCE END #####
+--></body></html>

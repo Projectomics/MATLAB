@@ -1,0 +1,200 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Point in polygon (PIP) problem in 2-dimensional space</title><meta name="generator" content="MATLAB 8.0"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-11-27"><meta name="DC.source" content="Point_in_polygon_2D.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, tt, code { font-size:12px; }
+pre { margin:0px 0px 20px; }
+pre.error { color:red; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>Point in polygon (PIP) problem in 2-dimensional space</h1><!--introduction--><p>The point-in-polygon (PIP) problem asks whether each point of an arbitrary point set (query points) lies inside, outside, or on the boundary of the convex hull of another given point set (polygon in plane).</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Initial data</a></li><li><a href="#5">Processing</a></li><li><a href="#8">Plots</a></li><li><a href="#13">Contact author</a></li></ul></div><h2>Initial data<a name="1"></a></h2><p>Set the random number generator.</p><pre class="codeinput">rng(1);
+</pre><p>Set the points the convex hull of which defines the polygon.</p><pre class="codeinput">points=rand(100,2);
+</pre><p>Set the query points, i.e. the points for which it will be determined if they lie inside or outside the polygon formed by the convex hull of <img src="Point_in_polygon_2D_eq76373.png" alt="$points$">.</p><pre class="codeinput">querypoints=0.3+rand(10,2);
+</pre><p>Plot the points the convex hull of which defines the polygon (in blue) and the query points (in orange).</p><pre class="codeinput">figure(<span class="string">'Name'</span>,<span class="string">'Point set and query points'</span>,<span class="string">'NumberTitle'</span>,<span class="string">'off'</span>)
+scatter(points(:,1),points(:,2),<span class="keyword">...</span>
+    <span class="string">'marker'</span>,<span class="string">'o'</span>,<span class="string">'MarkerEdgeColor'</span>,[0 0 1],<span class="string">'LineWidth'</span>,2)
+hold <span class="string">on</span>
+scatter(querypoints(:,1),querypoints(:,2),<span class="keyword">...</span>
+    <span class="string">'marker'</span>,<span class="string">'o'</span>,<span class="string">'MarkerEdgeColor'</span>,[1 0.5 0],<span class="string">'LineWidth'</span>,2)
+xlabel(<span class="string">'x'</span>,<span class="string">'FontSize'</span>,13);
+ylabel(<span class="string">'y'</span>,<span class="string">'FontSize'</span>,13);
+title(<span class="string">'Point set and query points'</span>,<span class="string">'FontSize'</span>,13)
+axis <span class="string">equal</span>
+</pre><img vspace="5" hspace="5" src="Point_in_polygon_2D_01.png" alt=""> <h2>Processing<a name="5"></a></h2><p>Find the plane coefficients of the convex hull of the initial point set.</p><pre class="codeinput">[chull,cf,df]=convhull_nd(points);
+</pre><p>Determine if the query points are inside or outside the polygon formed by the convex hull of <img src="Point_in_polygon_2D_eq76373.png" alt="$points$">. If <img src="Point_in_polygon_2D_eq77780.png" alt="$inpolygon$"> is true, then the corresponding point is inside the polygon.</p><pre class="codeinput">inpolygon=~any(cf*querypoints'+df(:,ones(1,size(querypoints,1)))&gt;0,1);
+</pre><p>Find the coordinates of the query points which are inside the polygon.</p><pre class="codeinput">inpolygon_points=querypoints(inpolygon,:);
+</pre><h2>Plots<a name="8"></a></h2><p><b>Plot the convex hull of the initial point set, the query points, and the query points which lie inside the convex hull.</b></p><p>Find the first and the second point identity of each edge of the convex hull of the initial point set.</p><pre class="codeinput">node1=chull(:,1);
+node2=chull(:,2);
+</pre><p>Find the x and y coordinates of the first and second point of each edge of the convex hull of the initial point set.</p><pre class="codeinput">x1=points(node1,1);
+x2=points(node2,1);
+y1=points(node1,2);
+y2=points(node2,2);
+</pre><p>Arrange the coordinate data.</p><pre class="codeinput">X=[x1,x2]';
+Y=[y1,y2]';
+</pre><p>Plot the convex hull of the initial point set (points in filled orange and edges in blue), the query points (in blue circles) and the query points which lie inside the convex hull (blue circles with orange asterisks).</p><pre class="codeinput">figure(<span class="string">'Name'</span>,<span class="string">'Query points in convex hull'</span>,<span class="string">'NumberTitle'</span>,<span class="string">'off'</span>)
+line(X,Y,<span class="string">'marker'</span>,<span class="string">'.'</span>,<span class="string">'markersize'</span>,20,<span class="string">'markeredgecolor'</span>,[1 0.5 0],<span class="keyword">...</span>
+    <span class="string">'linestyle'</span>,<span class="string">'-'</span>, <span class="string">'linewidth'</span>,2,<span class="string">'color'</span>,<span class="string">'blue'</span>);
+hold <span class="string">on</span>
+scatter(querypoints(:,1),querypoints(:,2),<span class="keyword">...</span>
+    <span class="string">'marker'</span>,<span class="string">'o'</span>,<span class="string">'MarkerEdgeColor'</span>,[0 0 1],<span class="string">'LineWidth'</span>,2)
+scatter(inpolygon_points(:,1),inpolygon_points(:,2),<span class="keyword">...</span>
+    <span class="string">'marker'</span>,<span class="string">'*'</span>,<span class="string">'MarkerEdgeColor'</span>,[1 0.5 0],<span class="string">'LineWidth'</span>,2);
+xlabel(<span class="string">'x'</span>,<span class="string">'FontSize'</span>,13);
+ylabel(<span class="string">'y'</span>,<span class="string">'FontSize'</span>,13);
+title(<span class="string">'Query points in convex hull'</span>,<span class="string">'FontSize'</span>,13)
+</pre><img vspace="5" hspace="5" src="Point_in_polygon_2D_02.png" alt=""> <h2>Contact author<a name="13"></a></h2><pre>(c) 2014 by George Papazafeiropoulos
+First Lieutenant, Infrastructure Engineer, Hellenic Air Force
+Civil Engineer, M.Sc., Ph.D. candidate, NTUA</pre><p>Email: <a href="mailto:gpapazafeiropoulos@yahoo.gr">gpapazafeiropoulos@yahoo.gr</a></p><p>Website: <a href="http://users.ntua.gr/gpapazaf/">http://users.ntua.gr/gpapazaf/</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2012b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% Point in polygon (PIP) problem in 2-dimensional space
+% The point-in-polygon (PIP) problem asks whether each point of an
+% arbitrary point set (query points) lies inside, outside, or on the
+% boundary of the convex hull of another given point set (polygon in
+% plane).
+
+%% Initial data
+% Set the random number generator.
+rng(1);
+%% 
+% Set the points the convex hull of which defines the polygon.
+points=rand(100,2);
+%% 
+% Set the query points, i.e. the points for which it will be determined if
+% they lie inside or outside the polygon formed by the convex hull of
+% $points$.
+querypoints=0.3+rand(10,2);
+%%
+% Plot the points the convex hull of which defines the polygon (in blue)
+% and the query points (in orange).
+figure('Name','Point set and query points','NumberTitle','off')
+scatter(points(:,1),points(:,2),...
+    'marker','o','MarkerEdgeColor',[0 0 1],'LineWidth',2)
+hold on
+scatter(querypoints(:,1),querypoints(:,2),...
+    'marker','o','MarkerEdgeColor',[1 0.5 0],'LineWidth',2)
+xlabel('x','FontSize',13);
+ylabel('y','FontSize',13);
+title('Point set and query points','FontSize',13)
+axis equal
+
+%% Processing
+% Find the plane coefficients of the convex hull of the initial point set.
+[chull,cf,df]=convhull_nd(points);
+%%
+% Determine if the query points are inside or outside the polygon formed by
+% the convex hull of $points$. If $inpolygon$ is true, then the
+% corresponding point is inside the polygon.
+inpolygon=~any(cf*querypoints'+df(:,ones(1,size(querypoints,1)))>0,1);
+%%
+% Find the coordinates of the query points which are inside the polygon.
+inpolygon_points=querypoints(inpolygon,:);
+
+%% Plots
+% *Plot the convex hull of the initial point set, the query points, and the
+% query points which lie inside the convex hull.*
+%%
+% Find the first and the second point identity of each edge of the convex
+% hull of the initial point set.
+node1=chull(:,1);
+node2=chull(:,2);
+%%
+% Find the x and y coordinates of the first and second point of each edge
+% of the convex hull of the initial point set.
+x1=points(node1,1);
+x2=points(node2,1);
+y1=points(node1,2);
+y2=points(node2,2);
+%%
+% Arrange the coordinate data.
+X=[x1,x2]';
+Y=[y1,y2]';
+%%
+% Plot the convex hull of the initial point set (points in filled orange
+% and edges in blue), the query points (in blue circles) and the query
+% points which lie inside the convex hull (blue circles with orange
+% asterisks).
+figure('Name','Query points in convex hull','NumberTitle','off')
+line(X,Y,'marker','.','markersize',20,'markeredgecolor',[1 0.5 0],...
+    'linestyle','-', 'linewidth',2,'color','blue');
+hold on
+scatter(querypoints(:,1),querypoints(:,2),...
+    'marker','o','MarkerEdgeColor',[0 0 1],'LineWidth',2)
+scatter(inpolygon_points(:,1),inpolygon_points(:,2),...
+    'marker','*','MarkerEdgeColor',[1 0.5 0],'LineWidth',2);
+xlabel('x','FontSize',13);
+ylabel('y','FontSize',13);
+title('Query points in convex hull','FontSize',13)
+
+%% Contact author
+%
+%  (c) 2014 by George Papazafeiropoulos
+%  First Lieutenant, Infrastructure Engineer, Hellenic Air Force
+%  Civil Engineer, M.Sc., Ph.D. candidate, NTUA
+%
+% Email: gpapazafeiropoulos@yahoo.gr
+%
+% Website: http://users.ntua.gr/gpapazaf/
+%
+
+
+
+##### SOURCE END #####
+--></body></html>

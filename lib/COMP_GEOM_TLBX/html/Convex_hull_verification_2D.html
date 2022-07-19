@@ -1,0 +1,290 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Verification of the convex hull algorithm in 2-dimensional space</title><meta name="generator" content="MATLAB 8.0"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-11-27"><meta name="DC.source" content="Convex_hull_verification_2D.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, tt, code { font-size:12px; }
+pre { margin:0px 0px 20px; }
+pre.error { color:red; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>Verification of the convex hull algorithm in 2-dimensional space</h1><!--introduction--><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Initial data</a></li><li><a href="#4">Processing</a></li><li><a href="#6">Verification</a></li><li><a href="#15">Plots</a></li><li><a href="#25">Contact author</a></li></ul></div><h2>Initial data<a name="1"></a></h2><p>Set the random number generator.</p><pre class="codeinput">rng(1);
+</pre><p>Set the points the convex hull of which is to be calculated.</p><pre class="codeinput">points=rand(100,2);
+</pre><p>Plot the point set.</p><pre class="codeinput">figure(<span class="string">'Name'</span>,<span class="string">'Point set'</span>,<span class="string">'NumberTitle'</span>,<span class="string">'off'</span>)
+scatter(points(:,1),points(:,2))
+xlabel(<span class="string">'x'</span>,<span class="string">'FontSize'</span>,13);
+ylabel(<span class="string">'y'</span>,<span class="string">'FontSize'</span>,13);
+title(<span class="string">'Point set'</span>,<span class="string">'FontSize'</span>,13)
+</pre><img vspace="5" hspace="5" src="Convex_hull_verification_2D_01.png" alt=""> <h2>Processing<a name="4"></a></h2><p>Find the point identities defining each facet of the convex hull of the point set with the new algorithm.</p><pre class="codeinput">chull1=convhull_nd(points);
+</pre><p>Find the point identities defining each facet of the convex hull of the point set with the algorithm provided by MATLAB.</p><pre class="codeinput">chull2=convhulln(points,{<span class="string">'Qt'</span>,<span class="string">'Qx'</span>});
+</pre><h2>Verification<a name="6"></a></h2><p><b>Error check 1: hull sizes</b></p><p>Find the number of facets consisting the convex hull calculated by the new algorithm.</p><pre class="codeinput">hfacets=size(chull1,1);
+</pre><p>Find the number of facets consisting the convex hull calculated by the algorithm provided by MATLAB</p><pre class="codeinput">cfacets=size(chull2,1);
+</pre><p>Check if the number of facets consisting the two calculated convex hulls is the same. If this is not the case, throw an error.</p><pre class="codeinput"><span class="keyword">if</span> cfacets~=hfacets
+    error(<span class="string">'The number of facets does not match the true solution.'</span>);
+<span class="keyword">end</span>
+</pre><p><b>Error check 2: duplicate facets</b></p><p><img src="Convex_hull_verification_2D_eq51528.png" alt="$d$"> is the dimension of the problem.</p><pre class="codeinput">d=size(points,2);
+</pre><p>Loop over all facets in pairs, such that each facet pair contains two different facets. For each pair, the facets of which are defined by <img src="Convex_hull_verification_2D_eq51528.png" alt="$d$"> points each, check if the two facets contain <img src="Convex_hull_verification_2D_eq51528.png" alt="$d$"> common points. If so, this means that the two facets are defined by the same points, therefore the two facets of the pair are identical. There must not be any duplicate facets, so if a pair is found having two identical facets, throw an error.</p><pre class="codeinput"><span class="keyword">for</span> i=1:hfacets
+    <span class="keyword">for</span> j=i+1:hfacets
+        <span class="keyword">if</span> nnz(ismember(chull1(i,:),chull1(j,:)))==d
+            error(<span class="string">'Duplicate hull facet.'</span>)
+        <span class="keyword">end</span>
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+</pre><p><b>Error check 3: true solution</b></p><p>For each facet (<img src="Convex_hull_verification_2D_eq28128.png" alt="$i$">) of the convex hull calculated by the new algorithm, loop over all facets (<img src="Convex_hull_verification_2D_eq31413.png" alt="$j$">) consisting the convex hull calculated by the algorithm provided by MATLAB, and check if the points defining facet <img src="Convex_hull_verification_2D_eq28128.png" alt="$i$"> and the points defining facet <img src="Convex_hull_verification_2D_eq28128.png" alt="$i$"> are common. This must happen exactly one time, since the faces defining the two convex hulls are unique according to the above check 2, and their number is the same according to the above check 1, namely the <img src="Convex_hull_verification_2D_eq32057.png" alt="$count$"> parameter can take the values <img src="Convex_hull_verification_2D_eq12896.png" alt="$0$"> or <img src="Convex_hull_verification_2D_eq80350.png" alt="$1$">. If no <img src="Convex_hull_verification_2D_eq31413.png" alt="$j$"> th facet identical to <img src="Convex_hull_verification_2D_eq28128.png" alt="$i$"> th facet is encountered, then the <img src="Convex_hull_verification_2D_eq32057.png" alt="$count$"> parameter will remain <img src="Convex_hull_verification_2D_eq12896.png" alt="$0$">, otherwise it will be set equal to <img src="Convex_hull_verification_2D_eq80350.png" alt="$1$">. If the <img src="Convex_hull_verification_2D_eq32057.png" alt="$count$"> parameter remains equal to <img src="Convex_hull_verification_2D_eq12896.png" alt="$0$">, throw an error.</p><pre class="codeinput"><span class="keyword">for</span> i=1:hfacets
+    facet1=chull1(i,:);
+    count=0;
+    <span class="keyword">for</span> j=1:cfacets
+        facet2=chull2(j,:);
+        <span class="keyword">if</span> nnz(ismember(facet1,facet2))==d
+            count=1;
+        <span class="keyword">end</span>
+    <span class="keyword">end</span>
+    <span class="keyword">if</span> ~count
+        error([<span class="string">'Facet('</span> num2str(i) <span class="string">') = ['</span> num2str(facet1) <span class="string">'] is not in the true solution.'</span>])
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+</pre><h2>Plots<a name="15"></a></h2><p><b>Plot the convex hull of the point set calculated with the new algorithm.</b></p><p>Find the first and the second point identity of each edge of the convex hull.</p><pre class="codeinput">node1=chull1(:,1);
+node2=chull1(:,2);
+</pre><p>Find the x and y coordinates of the first and second point of each edge of the convex hull.</p><pre class="codeinput">x1=points(node1,1);
+x2=points(node2,1);
+y1=points(node1,2);
+y2=points(node2,2);
+</pre><p>Arrange the coordinate data.</p><pre class="codeinput">X1=[x1,x2]';
+Y1=[y1,y2]';
+</pre><p>Plot the convex hull.</p><pre class="codeinput">figure(<span class="string">'Name'</span>,<span class="string">'Convex hull with the new algorithm'</span>,<span class="string">'NumberTitle'</span>,<span class="string">'off'</span>)
+line(X1,Y1,<span class="string">'marker'</span>,<span class="string">'.'</span>,<span class="string">'markersize'</span>,20,<span class="string">'markeredgecolor'</span>,[1 0.5 0],<span class="keyword">...</span>
+    <span class="string">'linestyle'</span>,<span class="string">'-'</span>, <span class="string">'linewidth'</span>,2,<span class="string">'color'</span>,<span class="string">'blue'</span>);
+xlabel(<span class="string">'x'</span>,<span class="string">'FontSize'</span>,13);
+ylabel(<span class="string">'y'</span>,<span class="string">'FontSize'</span>,13);
+title(<span class="string">'Convex hull with the new algorithm'</span>,<span class="string">'FontSize'</span>,13)
+</pre><img vspace="5" hspace="5" src="Convex_hull_verification_2D_02.png" alt=""> <p><b>Plot the convex hull of the point set calculated with the algorithm provided by MATLAB.</b></p><p>Find the first and the second point identity of each edge of the convex hull.</p><pre class="codeinput">node1=chull2(:,1);
+node2=chull2(:,2);
+</pre><p>Find the x and y coordinates of the first and second point of each edge of the convex hull.</p><pre class="codeinput">x1=points(node1,1);
+x2=points(node2,1);
+y1=points(node1,2);
+y2=points(node2,2);
+</pre><p>Arrange the coordinate data.</p><pre class="codeinput">X1=[x1,x2]';
+Y1=[y1,y2]';
+</pre><p>Plot the convex hull.</p><pre class="codeinput">figure(<span class="string">'Name'</span>,<span class="string">'Convex hull with MATLAB algorithm'</span>,<span class="string">'NumberTitle'</span>,<span class="string">'off'</span>)
+line(X1,Y1,<span class="string">'marker'</span>,<span class="string">'.'</span>,<span class="string">'markersize'</span>,20,<span class="string">'markeredgecolor'</span>,[1 0.5 0],<span class="keyword">...</span>
+    <span class="string">'linestyle'</span>,<span class="string">'-'</span>, <span class="string">'linewidth'</span>,2,<span class="string">'color'</span>,<span class="string">'blue'</span>);
+xlabel(<span class="string">'x'</span>,<span class="string">'FontSize'</span>,13);
+ylabel(<span class="string">'y'</span>,<span class="string">'FontSize'</span>,13);
+title(<span class="string">'Convex hull with MATLAB algorithm'</span>,<span class="string">'FontSize'</span>,13)
+</pre><img vspace="5" hspace="5" src="Convex_hull_verification_2D_03.png" alt=""> <h2>Contact author<a name="25"></a></h2><pre>(c) 2014 by George Papazafeiropoulos
+First Lieutenant, Infrastructure Engineer, Hellenic Air Force
+Civil Engineer, M.Sc., Ph.D. candidate, NTUA</pre><p>Email: <a href="mailto:gpapazafeiropoulos@yahoo.gr">gpapazafeiropoulos@yahoo.gr</a></p><p>Website: <a href="http://users.ntua.gr/gpapazaf/">http://users.ntua.gr/gpapazaf/</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2012b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% Verification of the convex hull algorithm in 2-dimensional space
+
+%% Initial data
+% Set the random number generator.
+rng(1);
+%% 
+% Set the points the convex hull of which is to be calculated.
+points=rand(100,2);
+%%
+% Plot the point set.
+figure('Name','Point set','NumberTitle','off')
+scatter(points(:,1),points(:,2))
+xlabel('x','FontSize',13);
+ylabel('y','FontSize',13);
+title('Point set','FontSize',13)
+
+%% Processing
+% Find the point identities defining each facet of the convex hull of the
+% point set with the new algorithm.
+chull1=convhull_nd(points);
+%%
+% Find the point identities defining each facet of the convex hull of the
+% point set with the algorithm provided by MATLAB.
+chull2=convhulln(points,{'Qt','Qx'});
+%% Verification
+% *Error check 1: hull sizes*
+%%
+% Find the number of facets consisting the convex hull calculated by the
+% new algorithm.
+hfacets=size(chull1,1);
+%%
+% Find the number of facets consisting the convex hull calculated by the
+% algorithm provided by MATLAB
+cfacets=size(chull2,1);
+%%
+% Check if the number of facets consisting the two calculated convex hulls
+% is the same. If this is not the case, throw an error.
+if cfacets~=hfacets
+    error('The number of facets does not match the true solution.');
+end
+%%
+% *Error check 2: duplicate facets*
+%%
+% $d$ is the dimension of the problem.
+d=size(points,2);
+%%
+% Loop over all facets in pairs, such that each facet pair contains two
+% different facets. For each pair, the facets of which are defined by $d$
+% points each, check if the two facets contain $d$ common points. If so,
+% this means that the two facets are defined by the same points, therefore
+% the two facets of the pair are identical. There must not be any duplicate
+% facets, so if a pair is found having two identical facets, throw an
+% error.
+for i=1:hfacets
+    for j=i+1:hfacets
+        if nnz(ismember(chull1(i,:),chull1(j,:)))==d
+            error('Duplicate hull facet.')
+        end
+    end
+end
+%%
+% *Error check 3: true solution*
+%%
+% For each facet ($i$) of the convex hull calculated by the new algorithm,
+% loop over all facets ($j$) consisting the convex hull calculated by the
+% algorithm provided by MATLAB, and check if the points defining facet $i$
+% and the points defining facet $i$ are common. This must happen exactly
+% one time, since the faces defining the two convex hulls are unique
+% according to the above check 2, and their number is the same according to
+% the above check 1, namely the $count$ parameter can take the values $0$
+% or $1$. If no $j$ th facet identical to $i$ th facet is encountered, then
+% the $count$ parameter will remain $0$, otherwise it will be set equal to
+% $1$. If the $count$ parameter remains equal to $0$, throw an error.
+for i=1:hfacets
+    facet1=chull1(i,:);
+    count=0;
+    for j=1:cfacets
+        facet2=chull2(j,:);
+        if nnz(ismember(facet1,facet2))==d
+            count=1;
+        end
+    end
+    if ~count
+        error(['Facet(' num2str(i) ') = [' num2str(facet1) '] is not in the true solution.'])
+    end
+end
+%% Plots
+% *Plot the convex hull of the point set calculated with the new
+% algorithm.*
+%%
+% Find the first and the second point identity of each edge of the convex
+% hull.
+node1=chull1(:,1);
+node2=chull1(:,2);
+%%
+% Find the x and y coordinates of the first and second point of each
+% edge of the convex hull.
+x1=points(node1,1);
+x2=points(node2,1);
+y1=points(node1,2);
+y2=points(node2,2);
+%%
+% Arrange the coordinate data.
+X1=[x1,x2]';
+Y1=[y1,y2]';
+%%
+% Plot the convex hull.
+figure('Name','Convex hull with the new algorithm','NumberTitle','off')
+line(X1,Y1,'marker','.','markersize',20,'markeredgecolor',[1 0.5 0],...
+    'linestyle','-', 'linewidth',2,'color','blue');
+xlabel('x','FontSize',13);
+ylabel('y','FontSize',13);
+title('Convex hull with the new algorithm','FontSize',13)
+%%
+% *Plot the convex hull of the point set calculated with the algorithm
+% provided by MATLAB.*
+%%
+% Find the first and the second point identity of each edge of the convex
+% hull.
+node1=chull2(:,1);
+node2=chull2(:,2);
+%%
+% Find the x and y coordinates of the first and second point of each
+% edge of the convex hull.
+x1=points(node1,1);
+x2=points(node2,1);
+y1=points(node1,2);
+y2=points(node2,2);
+%%
+% Arrange the coordinate data.
+X1=[x1,x2]';
+Y1=[y1,y2]';
+%%
+% Plot the convex hull.
+figure('Name','Convex hull with MATLAB algorithm','NumberTitle','off')
+line(X1,Y1,'marker','.','markersize',20,'markeredgecolor',[1 0.5 0],...
+    'linestyle','-', 'linewidth',2,'color','blue');
+xlabel('x','FontSize',13);
+ylabel('y','FontSize',13);
+title('Convex hull with MATLAB algorithm','FontSize',13)
+
+%% Contact author
+%
+%  (c) 2014 by George Papazafeiropoulos
+%  First Lieutenant, Infrastructure Engineer, Hellenic Air Force
+%  Civil Engineer, M.Sc., Ph.D. candidate, NTUA
+%
+% Email: gpapazafeiropoulos@yahoo.gr
+%
+% Website: http://users.ntua.gr/gpapazaf/
+%
+
+
+
+##### SOURCE END #####
+--></body></html>

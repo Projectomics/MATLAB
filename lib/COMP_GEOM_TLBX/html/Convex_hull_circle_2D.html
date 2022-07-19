@@ -1,0 +1,166 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Vertices of convex hull of points lying on the perimeter of a circle</title><meta name="generator" content="MATLAB 8.0"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-11-27"><meta name="DC.source" content="Convex_hull_circle_2D.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, tt, code { font-size:12px; }
+pre { margin:0px 0px 20px; }
+pre.error { color:red; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>Vertices of convex hull of points lying on the perimeter of a circle</h1><!--introduction--><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Initial data</a></li><li><a href="#5">Processing</a></li><li><a href="#6">Verification</a></li><li><a href="#10">Plots</a></li><li><a href="#13">Contact author</a></li></ul></div><h2>Initial data<a name="1"></a></h2><p>Set the random number generator.</p><pre class="codeinput">rng(1);
+</pre><p>Set the points the convex hull of which is to be calculated. They form the perimeter of the unit circle.</p><pre class="codeinput">phi=(pi/50:pi/50:2*pi)';
+points=[cos(phi),sin(phi)];
+</pre><p>Perform random permutation to points to avoid infinite loops in convhull_nd.</p><pre class="codeinput">points=points+0.001*rand(size(points));
+</pre><p>Plot the point set in blue circles.</p><pre class="codeinput">figure(<span class="string">'Name'</span>,<span class="string">'Point set'</span>,<span class="string">'NumberTitle'</span>,<span class="string">'off'</span>)
+scatter(points(:,1),points(:,2),<span class="keyword">...</span>
+    <span class="string">'marker'</span>,<span class="string">'o'</span>,<span class="string">'MarkerEdgeColor'</span>,[0 0 1],<span class="string">'LineWidth'</span>,2)
+xlabel(<span class="string">'x'</span>,<span class="string">'FontSize'</span>,13);
+ylabel(<span class="string">'y'</span>,<span class="string">'FontSize'</span>,13);
+title(<span class="string">'Point set'</span>,<span class="string">'FontSize'</span>,13)
+axis <span class="string">equal</span>
+</pre><img vspace="5" hspace="5" src="Convex_hull_circle_2D_01.png" alt=""> <h2>Processing<a name="5"></a></h2><p>Find the point identities defining each facet of the convex hull of the point set with the new algorithm.</p><pre class="codeinput">chull1=convhull_nd(points);
+</pre><h2>Verification<a name="6"></a></h2><p><b>Error check: hull size</b></p><p>Find the initial number of points.</p><pre class="codeinput">ipoints=size(points,1);
+</pre><p>Find the number of points consisting the convex hull.</p><pre class="codeinput">hpoints=length(unique(chull1(:)));
+</pre><p>Check if the number of points consisting the convex hull is equal to the initial number of points. Since the configuration of the initial points is a boundary that is convex everywhere and does not have internal points, this point set will be the convex hull of itself. If this is not the case, throw an error.</p><pre class="codeinput"><span class="keyword">if</span> ipoints~=hpoints
+    error(<span class="string">'The number of points does not match the true solution.'</span>);
+<span class="keyword">end</span>
+</pre><h2>Plots<a name="10"></a></h2><p>Find the coordinates of the vertices of the convex hull.</p><pre class="codeinput">convhullvert=points(unique(chull1(:)),:);
+</pre><p>Plot the vertices of the convex hull of the point set in orange asterisks.</p><pre class="codeinput">hold <span class="string">on</span>
+scatter(convhullvert(:,1),convhullvert(:,2),<span class="keyword">...</span>
+    <span class="string">'marker'</span>,<span class="string">'*'</span>,<span class="string">'MarkerEdgeColor'</span>,[1 0.5 0],<span class="string">'LineWidth'</span>,2);
+</pre><img vspace="5" hspace="5" src="Convex_hull_circle_2D_02.png" alt=""> <h2>Contact author<a name="13"></a></h2><pre>(c) 2014 by George Papazafeiropoulos
+First Lieutenant, Infrastructure Engineer, Hellenic Air Force
+Civil Engineer, M.Sc., Ph.D. candidate, NTUA</pre><p>Email: <a href="mailto:gpapazafeiropoulos@yahoo.gr">gpapazafeiropoulos@yahoo.gr</a></p><p>Website: <a href="http://users.ntua.gr/gpapazaf/">http://users.ntua.gr/gpapazaf/</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2012b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% Vertices of convex hull of points lying on the perimeter of a circle
+
+%% Initial data
+% Set the random number generator.
+rng(1);
+%% 
+% Set the points the convex hull of which is to be calculated. They form
+% the perimeter of the unit circle.
+phi=(pi/50:pi/50:2*pi)';
+points=[cos(phi),sin(phi)];
+%% 
+% Perform random permutation to points to avoid infinite loops in
+% convhull_nd.
+points=points+0.001*rand(size(points));
+%%
+% Plot the point set in blue circles.
+figure('Name','Point set','NumberTitle','off')
+scatter(points(:,1),points(:,2),...
+    'marker','o','MarkerEdgeColor',[0 0 1],'LineWidth',2)
+xlabel('x','FontSize',13);
+ylabel('y','FontSize',13);
+title('Point set','FontSize',13)
+axis equal
+
+%% Processing
+% Find the point identities defining each facet of the convex hull of the
+% point set with the new algorithm.
+chull1=convhull_nd(points);
+
+%% Verification
+% *Error check: hull size*
+%%
+% Find the initial number of points.
+ipoints=size(points,1);
+%%
+% Find the number of points consisting the convex hull.
+hpoints=length(unique(chull1(:)));
+%%
+% Check if the number of points consisting the convex hull is equal to the
+% initial number of points. Since the configuration of the initial points
+% is a boundary that is convex everywhere and does not have internal
+% points, this point set will be the convex hull of itself. If this is not
+% the case, throw an error.
+if ipoints~=hpoints
+    error('The number of points does not match the true solution.');
+end
+
+%% Plots
+%
+%%
+% Find the coordinates of the vertices of the convex hull.
+convhullvert=points(unique(chull1(:)),:);
+%%
+% Plot the vertices of the convex hull of the point set in orange
+% asterisks.
+hold on
+scatter(convhullvert(:,1),convhullvert(:,2),...
+    'marker','*','MarkerEdgeColor',[1 0.5 0],'LineWidth',2);
+
+%% Contact author
+%
+%  (c) 2014 by George Papazafeiropoulos
+%  First Lieutenant, Infrastructure Engineer, Hellenic Air Force
+%  Civil Engineer, M.Sc., Ph.D. candidate, NTUA
+%
+% Email: gpapazafeiropoulos@yahoo.gr
+%
+% Website: http://users.ntua.gr/gpapazaf/
+%
+
+
+
+##### SOURCE END #####
+--></body></html>

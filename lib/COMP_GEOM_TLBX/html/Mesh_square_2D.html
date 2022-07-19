@@ -1,0 +1,131 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Mesh generation of a square</title><meta name="generator" content="MATLAB 8.0"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-11-27"><meta name="DC.source" content="Mesh_square_2D.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, tt, code { font-size:12px; }
+pre { margin:0px 0px 20px; }
+pre.error { color:red; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>Mesh generation of a square</h1><!--introduction--><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Initial data</a></li><li><a href="#4">Processing</a></li><li><a href="#5">Plots</a></li><li><a href="#7">Contact author</a></li></ul></div><h2>Initial data<a name="1"></a></h2><p>Set the random number generator.</p><pre class="codeinput">rng(1);
+</pre><p>Set the points defining the region to be meshed.</p><pre class="codeinput">d=-1:0.5:1;
+[x,y]=meshgrid(d,d);
+points=[x(:),y(:);zeros(1,2)];
+</pre><p>Perform random permutation to points to avoid infinite loops in convhull_nd.</p><pre class="codeinput">points=points+0.001*rand(size(points));
+</pre><h2>Processing<a name="4"></a></h2><p>Find the Delaunay triangulation of the point set using the new convex hull algorithm.</p><pre class="codeinput">T1=delaunay_nd(points);
+</pre><h2>Plots<a name="5"></a></h2><p>Plot the mesh defined by the triangulation <img src="Mesh_square_2D_eq63521.png" alt="$T1$">.</p><pre class="codeinput">figure(<span class="string">'Name'</span>,<span class="string">'Square 2D mesh'</span>,<span class="string">'NumberTitle'</span>,<span class="string">'off'</span>)
+patch(<span class="string">'Faces'</span>,T1,<span class="string">'Vertices'</span>,points,<span class="keyword">...</span>
+    <span class="string">'FaceColor'</span>,[1 0.5 0],<span class="string">'EdgeColor'</span>,[0 0 1]);
+xlabel(<span class="string">'x'</span>,<span class="string">'FontSize'</span>,13);
+ylabel(<span class="string">'y'</span>,<span class="string">'FontSize'</span>,13);
+zlabel(<span class="string">'z'</span>,<span class="string">'FontSize'</span>,13);
+title(<span class="string">'Square 2D mesh'</span>,<span class="string">'FontSize'</span>,13)
+</pre><img vspace="5" hspace="5" src="Mesh_square_2D_01.png" alt=""> <h2>Contact author<a name="7"></a></h2><pre>(c) 2014 by George Papazafeiropoulos
+First Lieutenant, Infrastructure Engineer, Hellenic Air Force
+Civil Engineer, M.Sc., Ph.D. candidate, NTUA</pre><p>Email: <a href="mailto:gpapazafeiropoulos@yahoo.gr">gpapazafeiropoulos@yahoo.gr</a></p><p>Website: <a href="http://users.ntua.gr/gpapazaf/">http://users.ntua.gr/gpapazaf/</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2012b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% Mesh generation of a square
+
+%% Initial data
+% Set the random number generator.
+rng(1);
+%% 
+% Set the points defining the region to be meshed.
+d=-1:0.5:1;
+[x,y]=meshgrid(d,d);
+points=[x(:),y(:);zeros(1,2)];
+%% 
+% Perform random permutation to points to avoid infinite loops in
+% convhull_nd.
+points=points+0.001*rand(size(points));
+
+%% Processing
+% Find the Delaunay triangulation of the point set using the new convex
+% hull algorithm.
+T1=delaunay_nd(points);
+
+%% Plots
+%
+%%
+% Plot the mesh defined by the triangulation $T1$.
+figure('Name','Square 2D mesh','NumberTitle','off')
+patch('Faces',T1,'Vertices',points,...
+    'FaceColor',[1 0.5 0],'EdgeColor',[0 0 1]);
+xlabel('x','FontSize',13);
+ylabel('y','FontSize',13);
+zlabel('z','FontSize',13);
+title('Square 2D mesh','FontSize',13)
+
+%% Contact author
+%
+%  (c) 2014 by George Papazafeiropoulos
+%  First Lieutenant, Infrastructure Engineer, Hellenic Air Force
+%  Civil Engineer, M.Sc., Ph.D. candidate, NTUA
+%
+% Email: gpapazafeiropoulos@yahoo.gr
+%
+% Website: http://users.ntua.gr/gpapazaf/
+%
+
+
+
+##### SOURCE END #####
+--></body></html>

@@ -1,0 +1,203 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Interpolation of scattered data in 2 dimensions</title><meta name="generator" content="MATLAB 8.0"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-11-27"><meta name="DC.source" content="Scattered_data_interpolation_2D.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, tt, code { font-size:12px; }
+pre { margin:0px 0px 20px; }
+pre.error { color:red; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>Interpolation of scattered data in 2 dimensions</h1><!--introduction--><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Introduction</a></li><li><a href="#2">Initial data</a></li><li><a href="#9">Processing</a></li><li><a href="#12">Verification</a></li><li><a href="#14">Contact author</a></li></ul></div><h2>Introduction<a name="1"></a></h2><p>Scattered data consists of a set of points X and corresponding values V, where the points have no structure or order between their relative locations. There are various approaches to interpolating scattered data. One widely used approach uses a Delaunay triangulation of the points. In this example a single-valued multivariate function is defined over random scattered 2D data. Then the value of the function is found at an intermediate requested point through interpolation between its values at neighboring points. The function involves an analytic formula so that the interpolation result can be checked directly by evaluating the function at the requested point. Note that the number of required scattered points increases in higher dimensions, in order to maintain the accuracy of the interpolated value.</p><h2>Initial data<a name="2"></a></h2><p>Set the random number generator.</p><pre class="codeinput">rng(1);
+</pre><p>Set the dimension of the problem.</p><pre class="codeinput">d=2;
+</pre><p>Set the unit 4D cube vertices over which the function is defined.</p><pre class="codeinput">ends=[0 1];
+points1=zeros(2^d,d);
+<span class="keyword">for</span> i=0:d-1
+    rep=repmat(ends,2^(d-i-1),2^i);
+    points1(:,i+1)=rep(:);
+<span class="keyword">end</span>
+points1=10*points1-5+0.001*rand(size(points1));
+</pre><p>Set the scattered random 4D data over which the function is defined.</p><pre class="codeinput">points2=round(1000*rand(100,d))/100-5;
+</pre><p>Assemble</p><pre class="codeinput">points=[points1;points2];
+</pre><p>Set the function values.</p><pre class="codeinput">fval=sum(points.^2,2);
+</pre><p>Set the query point.</p><pre class="codeinput">pquery=10*rand(1,d)-5;
+</pre><h2>Processing<a name="9"></a></h2><p>Find the Delaunay triangulation of the 2D scattered data.</p><pre class="codeinput">T=delaunay_nd(points);
+</pre><p>Find the vertices of the simplex the query point lies in. For this purpose, find the barycentric coordinates of the query point with respect to each simplex of the Delaunay triangulation <img src="Scattered_data_interpolation_2D_eq57315.png" alt="$T$">. If all of the barycentric coordinates are larger than 0 for a given simplex, then this simplex contains the query point and the loop is terminated.</p><pre class="codeinput"><span class="keyword">for</span> i=1:size(T,1)
+    psimplex=points(T(i,:),:);
+    pdiff=psimplex-psimplex(ones(d+1,1),:);
+    pointdiff=pquery-psimplex(1,:);
+    st=pdiff(2:d+1,:)'\pointdiff';
+    barcoords=zeros(d+1,1);
+    barcoords(1,:)=1-sum(st);
+    barcoords(2:d+1,:)=st;
+    <span class="keyword">if</span> all(barcoords&gt;0)
+        interp_simplex=i;
+        interp_barcoords=barcoords;
+        <span class="keyword">break</span>;
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+</pre><p>Approximate the value of the function at the query point through linear interpolation of the function values at the vertices of the simplex containing the query point.</p><pre class="codeinput">appr_fval=fval(T(interp_simplex,:))'*interp_barcoords;
+</pre><h2>Verification<a name="12"></a></h2><p>Calculate the value of the function at the query point through its analytical formula.</p><pre class="codeinput">exact_fval=sum(pquery.^2);
+</pre><p>Find the relative error due to the interpolation.</p><pre class="codeinput">rel_err=(appr_fval-exact_fval)/exact_fval
+</pre><pre class="codeoutput">
+rel_err =
+
+    0.0220
+
+</pre><h2>Contact author<a name="14"></a></h2><pre>(c) 2014 by George Papazafeiropoulos
+First Lieutenant, Infrastructure Engineer, Hellenic Air Force
+Civil Engineer, M.Sc., Ph.D. candidate, NTUA</pre><p>Email: <a href="mailto:gpapazafeiropoulos@yahoo.gr">gpapazafeiropoulos@yahoo.gr</a></p><p>Website: <a href="http://users.ntua.gr/gpapazaf/">http://users.ntua.gr/gpapazaf/</a></p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2012b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% Interpolation of scattered data in 2 dimensions
+
+%% Introduction
+% Scattered data consists of a set of points X and corresponding values V,
+% where the points have no structure or order between their relative
+% locations. There are various approaches to interpolating scattered data.
+% One widely used approach uses a Delaunay triangulation of the points. In
+% this example a single-valued multivariate function is defined over random
+% scattered 2D data. Then the value of the function is found at an
+% intermediate requested point through interpolation between its values at
+% neighboring points. The function involves an analytic formula so that the
+% interpolation result can be checked directly by evaluating the function
+% at the requested point. Note that the number of required scattered points
+% increases in higher dimensions, in order to maintain the accuracy of the
+% interpolated value.
+
+%% Initial data
+% Set the random number generator.
+rng(1);
+%%
+% Set the dimension of the problem.
+d=2;
+%%
+% Set the unit 4D cube vertices over which the function is defined.
+ends=[0 1];
+points1=zeros(2^d,d);
+for i=0:d-1
+    rep=repmat(ends,2^(d-i-1),2^i);
+    points1(:,i+1)=rep(:);
+end
+points1=10*points1-5+0.001*rand(size(points1));
+%%
+% Set the scattered random 4D data over which the function is defined.
+points2=round(1000*rand(100,d))/100-5;
+%%
+% Assemble
+points=[points1;points2];
+%%
+% Set the function values.
+fval=sum(points.^2,2);
+%%
+% Set the query point.
+pquery=10*rand(1,d)-5;
+
+%% Processing
+% Find the Delaunay triangulation of the 2D scattered data.
+T=delaunay_nd(points);
+%%
+% Find the vertices of the simplex the query point lies in. For this
+% purpose, find the barycentric coordinates of the query point with respect
+% to each simplex of the Delaunay triangulation $T$. If all of the
+% barycentric coordinates are larger than 0 for a given simplex, then this
+% simplex contains the query point and the loop is terminated.
+for i=1:size(T,1)
+    psimplex=points(T(i,:),:);
+    pdiff=psimplex-psimplex(ones(d+1,1),:);
+    pointdiff=pquery-psimplex(1,:);
+    st=pdiff(2:d+1,:)'\pointdiff';
+    barcoords=zeros(d+1,1);
+    barcoords(1,:)=1-sum(st);
+    barcoords(2:d+1,:)=st;
+    if all(barcoords>0)
+        interp_simplex=i;
+        interp_barcoords=barcoords;
+        break;
+    end
+end
+%%
+% Approximate the value of the function at the query point through linear
+% interpolation of the function values at the vertices of the simplex
+% containing the query point.
+appr_fval=fval(T(interp_simplex,:))'*interp_barcoords;
+
+%% Verification
+% Calculate the value of the function at the query point through its
+% analytical formula.
+exact_fval=sum(pquery.^2);
+%%
+% Find the relative error due to the interpolation.
+rel_err=(appr_fval-exact_fval)/exact_fval
+
+%% Contact author
+%
+%  (c) 2014 by George Papazafeiropoulos
+%  First Lieutenant, Infrastructure Engineer, Hellenic Air Force
+%  Civil Engineer, M.Sc., Ph.D. candidate, NTUA
+%
+% Email: gpapazafeiropoulos@yahoo.gr
+%
+% Website: http://users.ntua.gr/gpapazaf/
+%
+
+
+
+##### SOURCE END #####
+--></body></html>
