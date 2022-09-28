@@ -3,5 +3,5 @@ _unused/
 lib/_unused/
 MATLAB/
 *.asv
-data/.DS_Store
-data/Mouse_Neurons/.DS_Store
+data/.DS_Store/
+data/Mouse_Neurons/.DS_Store/
