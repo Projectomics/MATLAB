@@ -1,15 +1,20 @@
-function main_menu_selector()
+function main_menu_selector(varargin)
 
     addpath('./lib/');
     addpath('./lib/jsonlab-1.5');
     addpath('./lib/COMP_GEOM_TLBX');
 
-    clear all;
+    if (nargin == 0)
+        nShuffles = 1000000000;
+    else
+        nShuffles = varargin{1};
+    end
+
+    labelBase = select_label();
+
+    nShufflesLabel = configure_label(nShuffles, labelBase);
     
     choice = select_function();
-
-    nShuffles = 100000;
-    nShufflesLabel = 'test_data_100K';
 
     reply = [];
         
@@ -30,7 +35,7 @@ function main_menu_selector()
 
         while (isempty(reply))
 
-            reply = select_csvFileName('Please select a file to shuffle.');
+            reply = sprintf('%s.csv', labelBase);
 
             if strcmp(reply, '!')
                 fprintf('\nExiting\n');
@@ -49,7 +54,9 @@ function main_menu_selector()
     elseif strcmp(choice, 'Analyze Data')
 
         while (isempty(reply))
-            reply = select_csvFileName('Please select the file with your original data.');
+        
+            reply = sprintf('%s.csv', labelBase);
+
             if strcmp(reply, '!')
                 disp('Exiting');
             else
@@ -60,12 +67,18 @@ function main_menu_selector()
                     fclose(fid);
                     binDifferences = raw_MouseLight(reply, nShufflesLabel, 1);
                 end
-            end                              
-        end
+            end                           
+        
+        end % while
 
         reply = [];
         while (isempty(reply))
-            reply = select_csvFileName('Please select the file with your shuffled data.');
+
+            clc;
+
+            fprintf('Please select the shuffled data file to call MouseLight on.\n\n');
+            reply = select_csvFileName('Select shuffled data file:', [nShufflesLabel,'_matrix_fullyShuffled_']);
+
             if strcmp(reply, '!')
                 disp('Exiting');
             else
@@ -76,10 +89,10 @@ function main_menu_selector()
                     fclose(fid2);
                     randDifferences = raw_MouseLight(reply, nShufflesLabel, 0);
                     [p, stats] = create_scaled_histogram(binDifferences, randDifferences, nShufflesLabel);
-                    disp(p);
                 end
-            end                  
-        end
+            end
+
+        end % while
         
     elseif strcmp(choice, 'Hierarchical Clustering')
         while (isempty(reply))
