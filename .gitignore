@@ -1,5 +1,6 @@
-# Ignore all unused code
+# Ignore all unused code and miscellaneous files and directories
 _unused/
+lib/_unused/
 MATLAB/
 *.asv
 data/.DS_Store
