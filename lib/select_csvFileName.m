@@ -1,6 +1,6 @@
-function csvFileName = select_csvFileName(instructionStr)
+function csvFileName = select_csvFileName(instructionStr, fileNameBase)
 
-    fileDir = sprintf('./data/*.csv');
+    fileDir = sprintf('./data/%s*.csv', fileNameBase);
     
     csvFiles = dir(fileDir);
     nCsvFiles = length(csvFiles);
@@ -13,19 +13,16 @@ function csvFileName = select_csvFileName(instructionStr)
 
         % display menu
         
-        clc;
-        
         fprintf('%s\n\n', instructionStr);
         fprintf('Please select your .csv file from the selections below:\n\n');
 
         for i = 1:nCsvFiles
-            fprintf('\t%2d) %s\n', i, csvFiles(i).name);
+            fprintf('%6d) %s\n', i, csvFiles(i).name);
         end % for i
         
-        fprintf('\t !) Exit\n');
+        fprintf('     !) Exit\n');
         
         reply = input('\nYour selection: ', 's');
-
         
         % process input
         
@@ -34,7 +31,7 @@ function csvFileName = select_csvFileName(instructionStr)
         else 
             num = str2double(reply);
 
-            if num <= nCsvFiles
+            if (num <= nCsvFiles)
                 csvFileName = sprintf(csvFiles(num).name);
             else
                 reply = [];
