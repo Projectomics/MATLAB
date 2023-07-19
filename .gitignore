@@ -1,6 +1,11 @@
 # Ignore all unused code and miscellaneous files and directories
 _unused/
 lib/_unused/
+lib/Braintell
+lib/Broad\ Institute
+lib/COMP_GEOM_TLBX
+lib/Linnarsson
+lib/Nature
 MATLAB/
 *.asv
 data/.DS_Store/
