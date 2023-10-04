@@ -1,9 +1,9 @@
-function csvFileName = select_csvFileName(instructionStr, fileNameBase)
+function xlsxFileName = select_xlsx_file_name(instructionStr, fileNameBase)
 
-    fileDir = sprintf('./data/%s*.csv', fileNameBase);
+    fileDir = sprintf('./data/%s*.xlsx', fileNameBase);
     
-    csvFiles = dir(fileDir);
-    nCsvFiles = length(csvFiles);
+    xlsxFiles = dir(fileDir);
+    nXlsxFiles = length(xlsxFiles);
 
     reply = [];
     
@@ -13,11 +13,13 @@ function csvFileName = select_csvFileName(instructionStr, fileNameBase)
 
         % display menu
         
+        clc;
+        
         fprintf('%s\n\n', instructionStr);
-        fprintf('Please select your .csv file from the selections below:\n\n');
+        fprintf('Please select your .xlsx file from the selections below:\n\n');
 
-        for i = 1:nCsvFiles
-            fprintf('%6d) %s\n', i, csvFiles(i).name);
+        for i = 1:nXlsxFiles
+            fprintf('%6d) %s\n', i, xlsxFiles(i).name);
         end % for i
         
         fprintf('     !) Exit\n');
@@ -27,12 +29,12 @@ function csvFileName = select_csvFileName(instructionStr, fileNameBase)
         % process input
         
         if strcmp(reply, '!')
-            csvFileName = '!';
+            xlsxFileName = '!';
         else 
             num = str2double(reply);
 
-            if (num <= nCsvFiles)
-                csvFileName = sprintf(csvFiles(num).name);
+            if (num <= nXlsxFiles)
+                xlsxFileName = sprintf(xlsxFiles(num).name);
             else
                 reply = [];
             end % if num
@@ -40,4 +42,4 @@ function csvFileName = select_csvFileName(instructionStr, fileNameBase)
 
     end % while loop
 
-end % select_csvFileName()
+end % select_xlsx_file_name()

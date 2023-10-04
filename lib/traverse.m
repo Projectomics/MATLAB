@@ -1,6 +1,6 @@
-function [nInvasionsOut, totalDistanceOut] = traverse(hemisphere, somaHemisphere, parcel, ...
+function [nInvasionsOut, totalDistanceOut, distancesToAllPointsInParcel] = traverse(hemisphere, somaHemisphere, parcel, ...
     data, atlas, structureIds, sample, nInvasionsIn, totalDistanceIn, splitInput, parent, ...
-    parentPointDistance, parentArray)
+    parentPointDistance, parentArray, distancesToAllPointsInParcel)
     
     %check if point invades
     hasInvaded = 0;
@@ -14,13 +14,13 @@ function [nInvasionsOut, totalDistanceOut] = traverse(hemisphere, somaHemisphere
         currentHemisphere = '(C)';
     end
 
-    if(currentHemisphere == somaHemisphere)
+    if (currentHemisphere == somaHemisphere)
         currentHemisphere = '(I)';
     else
         currentHemisphere = '(C)';
     end
 
-    if(strcmp(currentHemisphere, hemisphere)==1)
+    if (strcmp(currentHemisphere, hemisphere)==1)
        sameHemisphere = 1; 
     end
 
@@ -37,11 +37,11 @@ function [nInvasionsOut, totalDistanceOut] = traverse(hemisphere, somaHemisphere
         end
     end
     
-    % distance
-    % calc distance between sample and parent
-    % add to parentPoint
+    %distance
+    %calc distance between sample and parent
+    %add to parentPoint
     
-    if(sample == 1)
+    if (sample == 1)
        parentPointDistance = 0;
     else
        x1 = data.neurons{1,1}.axon{1,parent}.x;
@@ -55,27 +55,38 @@ function [nInvasionsOut, totalDistanceOut] = traverse(hemisphere, somaHemisphere
     end
     
     isEqual = strcmp(currentParcel, parcel);
-    if(isEqual == 1 && sameHemisphere == 1)
+    if (isEqual == 1 && sameHemisphere == 1)
         nInvasionsOut = nInvasionsIn+1;
         hasInvaded = 1;
         totalDistanceOut = totalDistanceIn + parentPointDistance;
+        nPointsInParcel = length(distancesToAllPointsInParcel);
+        if ((nPointsInParcel == 1) && (distancesToAllPointsInParcel == 0))
+            distancesToAllPointsInParcel(1) = parentPointDistance;
+        else
+            distancesToAllPointsInParcel(nPointsInParcel+1) = parentPointDistance;
+        end
     else
         nInvasionsOut = nInvasionsIn;
         totalDistanceOut = totalDistanceIn;
     end
     
-    idx = find(parentArray == sample);
-    % base case
-    % if no point has sample as a parent point, return
-    % else
-    % store the indices of points that have sample as a parent point,
-    % for each point, call traverse
+    idx = find(parentArray == sample);    
+    %base case
+    %if no point has sample as a parent point, return
+    %else
+    %store the indices of points that have sample as a parent point,
+    %for each point, call traverse
     
-    if(length(idx) > 0)
+    if (length(idx) > 0)
+%         if(length(idx) > 1)
+%            disp('branch site'); 
+%         end
         for a = 1:length(idx)
            newSample = idx(a); 
-           [nInvasionsOut, totalDistanceOut] = traverse(hemisphere, somaHemisphere, parcel, data, atlas, structureIds, ...
-               newSample, nInvasionsOut, totalDistanceOut, splitInput, sample, parentPointDistance, parentArray); 
+           [nInvasionsOut, totalDistanceOut, distancesToAllPointsInParcel] = traverse(hemisphere, somaHemisphere, ...
+               parcel, data, atlas, structureIds, ...
+               newSample, nInvasionsOut, totalDistanceOut, splitInput, sample, parentPointDistance, parentArray, ...
+               distancesToAllPointsInParcel); 
         end
     end
     

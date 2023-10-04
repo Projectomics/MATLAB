@@ -1,18 +1,26 @@
-function matrixNormalized = matrix_normalized()
-% first normalization scheme
+function matrixNormalizedMatrix = matrix_normalized(originalMatrix)
+% This function takes a matrix as input and normalizes each cell value in
+% the matrix based on the sum of all values.
 
-   addpath('./lib/');
+   % Get the number of rows and columns in the original matrix.
+   [nRows, nCols] = size(originalMatrix);
+
+   % Extract the numerical values from the original matrix, excluding the label row,
+   % the label column, and the tract values (last) column.
+   matrixOriginalNums = originalMatrix(2:nRows, 2:nCols-1);
+
+   % Calculate the sum of all numerical values in the matrix.
+   sumMatrix = sum(cell2mat(matrixOriginalNums), 'all');
    
-   matrixOriginal = non_neg_least_squares();
-   matrixNormalized = matrixOriginal;
-   [rows, cols] = size(matrixOriginal);
-   matrixOriginal_nums = matrixOriginal(2:rows, 2:cols);
-   sum_cols = sum(cell2mat(matrixOriginal_nums), 'all');
-   
-   for r = 2:rows
-       for c = 2:cols
-           numerator = matrixOriginal{r, c}*6;
-           matrixNormalized{r, c} = (numerator/sum_cols);
+   % Initialize the output matrix as the original matrix.
+   matrixNormalizedMatrix = originalMatrix;
+
+   % Iterate through rows and columns (excluding the label row, the label
+   % column, and the tract values column) to perform matrix normalization.
+   for r = 2:nRows
+       for c = 2:nCols-1
+           % Normalize each cell value by dividing it by the sum of all values.
+           matrixNormalizedMatrix{r, c} = (originalMatrix{r, c} / sumMatrix);
        end
    end
    

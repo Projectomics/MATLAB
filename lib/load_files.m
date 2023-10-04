@@ -12,8 +12,8 @@ function morphologyMatrix = load_files()
     nFiles = length(neuronJsonFiles);
     %nFiles = 518;
     
-    strng = 'Loading brain areas from JSON file ...';
-    disp(strng);
+    fprintf('\nLoading brain areas from JSON file ...\n\n');
+
     atlas = loadjson('./data/brainAreas.json');
     nBrainAreas = length(atlas.data.brainAreas);
     
@@ -35,8 +35,7 @@ function morphologyMatrix = load_files()
     %emptySomaId = zeros(1, nFiles);
     %somaIndex = 1;
     for i = 1:nFiles
-        strng = sprintf('Loading JSON file %d of %d', i, nFiles);
-        disp(strng);
+        fprintf('Loading JSON file %d of %d\n', i, nFiles);
         
         % Load JSON file
         neuronJsonFileName = sprintf('./data/Mouse_Neurons/MouseLight-neurons/%s', neuronJsonFiles(i).name);
@@ -79,6 +78,6 @@ function morphologyMatrix = load_files()
         
     end % i
         
-    save_morphology_matrix(morphologyMatrix, 'all');
-    morphologyMatrix = save_axon_summaries(morphologyMatrix);
+    save_morphology_matrix(morphologyMatrix, 'ALL');
+    morphologyMatrix = save_axon_summaries(morphologyMatrix, 'ALL');
 end 

@@ -1,88 +1,101 @@
-function [p, stats] = create_scaled_histogram(binInput, randInput, region)
+function create_scaled_histogram(origInput, randInput, regionStr, nowDateStr)
+% Function to create histograms from the original and randomized sets of
+% angle data in which the maximum of the histogram of the randomized data
+% is scaled to equal to that of the original data and to conduct Levene's
+% statistical comparison of variances on the two distributions of angle data 
     
-    % find the maximum bin for the histogram from the data
-    binDifferences = cell2mat(binInput);
-    tempDifferences = cell2mat(randInput);
+    fprintf('\nConstructing histogram ...\n');
     
-    binDifferencesMax = max(binDifferences);
-    tempDifferencesMax = max(tempDifferences);
+    % Extract angles from the cell arrays and find their maximum values
+    origAngles = cell2mat(origInput);
+    randAngles = cell2mat(randInput);
+    
+    origAnglesMax = max(origAngles);
+    randAnglesMax = max(randAngles);
 
-    % create an array for the edges of the histogram bins
-    % first find the unique value in the data
-    binDifferencesUnique = unique(binDifferences);
-    tempDifferencesUnique = unique(tempDifferences);
+    % Find unique values in the angles and create edges for the histogram bins
+    origAnglesUnique = unique(origAngles);
+    randAnglesUnique = unique(randAngles);
 
-    % second create an array of edges values
-    binDifferencesEdges = [0:binDifferencesUnique(end)+1];
-    tempDifferencesEdges = [0:tempDifferencesUnique(end)+1];
+    origAnglesEdges = 0:origAnglesUnique(end)+1;
+    randAnglesEdges = 0:randAnglesUnique(end)+1;
 
-    % tally up the frequencies of the values in the data set
-    nBinDifferences = zeros(1, binDifferencesMax+1);
-    for i=1:length(binDifferences)
-       nBinDifferences(binDifferences(i)+1) = nBinDifferences(binDifferences(i)+1)+1; 
+    % Calculate the frequencies of the angles
+    nOrigAngles = zeros(1, origAnglesMax+1);
+    for i=1:length(origAngles)
+       nOrigAngles(origAngles(i)+1) = nOrigAngles(origAngles(i)+1)+1; 
     end
-    nTempDifferences = zeros(1, tempDifferencesMax+1);
-    for i=1:length(tempDifferences)
-       nTempDifferences(tempDifferences(i)+1) = nTempDifferences(tempDifferences(i)+1)+1; 
+    nRandAngles = zeros(1, randAnglesMax+1);
+    for i=1:length(randAngles)
+       nRandAngles(randAngles(i)+1) = nRandAngles(randAngles(i)+1)+1; 
     end
 
-    % find the maximum frequency
-    nBinDifferencesMax = max(nBinDifferences);
-    nTempDifferencesMax = max(nTempDifferences);
+    % Find the maximum frequencies
+    nOrigAnglesMax = max(nOrigAngles);
+    nRandAnglesMax = max(nRandAngles);
 
-    % scale the random data frequencies to the real data set maximum frequency
-    nRandDifferences = nBinDifferencesMax * nTempDifferences / nTempDifferencesMax;
+    % Scale the random data frequencies to match the real dataset maximum frequency
+    nRandAngles = nOrigAnglesMax * nRandAngles / nRandAnglesMax;
 
     clf;
 
-    histogram('BinEdges', binDifferencesEdges, 'BinCounts', nBinDifferences);
-    titleStr = sprintf('Number of Pathway Differences Between Neuron Pairs: real variance = %.2f; rand variance = %.2f', var(binDifferences), var(tempDifferences));
+    % Create and customize the histograms
+    histogram('BinEdges', origAnglesEdges, 'BinCounts', nOrigAngles);
+    titleStr = sprintf('Number of Pathway Angles Between Neuron Pairs: real variance = %.2f; rand variance = %.2f', var(origAngles), var(randAngles));
     title(titleStr);
     xlabel('Angle Between Neuron Pairs');
     ylabel('Number of Neuron Pairs');
     hold on;
-    histogram('BinEdges', tempDifferencesEdges, 'BinCounts', nRandDifferences);
+    histogram('BinEdges', randAnglesEdges, 'BinCounts', nRandAngles);
     hold on;
-    line([mean(binDifferences), mean(binDifferences)], [nBinDifferencesMax+2 nBinDifferencesMax+2], 'LineWidth', 1, 'Color', 'none');
-    line([mean(binDifferences), mean(binDifferences)], [nBinDifferencesMax nBinDifferencesMax], 'LineWidth', 1, 'Color', 'none');
+    line([mean(origAngles), mean(origAngles)], [nOrigAnglesMax+2 nOrigAnglesMax+2], 'LineWidth', 1, 'Color', 'none');
+    line([mean(origAngles), mean(origAngles)], [nOrigAnglesMax nOrigAnglesMax], 'LineWidth', 1, 'Color', 'none');
     
-    num = ((mean(binDifferences) + mean(tempDifferences)))/2;
-    num = num-1;
-
-    if(var(tempDifferences) > var(binDifferences))
-        legendStr = 'NS';
-        p = 'NA';
-        stats = 'NA';
+    % Check if the variance of the randomized angle data is greater
+    % than that of the original angle data
+    if (var(randAngles) > var(origAngles))
+        legendStr = 'NS'; % Not Significant
+        p = 'NA'; % Not Applicable
+        statistics = 'NA'; % Not Applicable
     else
-        matrix = [binDifferences(:), tempDifferences(:)];
-        [p, stats] = vartestn(matrix,'TestType','LeveneAbsolute','Display','off');
+        % Conduct Levene's statistical comparison of variances when the
+        % variance of the randomized angle data is less than that of the
+        % original angle data
+        matrix = [origAngles(:), randAngles(:)];
+        [p, statistics] = vartestn(matrix, 'TestType', 'LeveneAbsolute', 'Display', 'off');
 
+        % Perform legend handling
         if (p <= 0.001)
             str = {'***'};
             legendStr = 'p <= 0.001';
-            num = num-1;
-        elseif (0.01 >= p & p > 0.001)
+        elseif (0.01 >= p && p > 0.001)
             str = {'**'};
-            legendStr = '0.01 >= p >0.001';
-            num = num-1;
-        elseif (0.05 >= p & p > 0.01)
+            legendStr = '0.01 >= p > 0.001';
+        elseif (0.05 >= p && p > 0.01)
             str = {'*'};
             legendStr = '0.05 >= p > 0.01';
         else
             str = {'ns'};
             legendStr = 'p > 0.05';
-            num = num+0.5;
         end 
     end   
     
     pValueStr = sprintf('p = %e', p);
 
     hold off;
-    legend('Real Data', 'Randomized Data', legendStr, pValueStr, 'Location', 'northwest');
+    legend('Original Data', 'Randomized Data', legendStr, pValueStr, 'Location', 'northwest');
     
-    str = strcat('./output/', region, '_histogram_', datestr(now, 'yyyymmddHHMMSS'), '.fig');
+    % Save the figures and results
+    str = sprintf('./output/%s__histogram_%s.fig', regionStr, nowDateStr);
     saveas(gcf, str);
 
-    return;
-    
-end % create_scaled_histogram()    
+    pngPlotFileName = sprintf('./output/%s__histogram_%s.png', regionStr, nowDateStr);
+    print(gcf, '-dpng', '-r800', pngPlotFileName);
+
+    pValueFileName = sprintf('./output/%s__histogram__Levene_p_value_%s.xlsx', regionStr, nowDateStr);
+    writematrix(p, pValueFileName);
+
+    statisticsFileName = sprintf('./output/%s__histogram__Levene_statistics_%s.xlsx', regionStr, nowDateStr);
+    writestruct(statistics, statisticsFileName);
+
+end % create_scaled_histogram()

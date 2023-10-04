@@ -1,66 +1,58 @@
-function save_morphology_matrix(morphologyMatrix, region)
+function save_morphology_matrix(morphologyMatrix, regionStr, nowDateStr)
+% Function to save the morphologyMatrix structure array
 
-    %fileNameRaw = sprintf('scratch/dwheele5/ADS/morphologyMatrix_%s_rawcounts.txt', ...
-    %    datestr(now, 'yyyymmddHHMMSS'));
-    %fileNameSoma = sprintf('scratch/dwheele5/ADS/morphologyMatrix_%s_soma.txt', ...
-    %    datestr(now, 'yyyymmddHHMMSS'));
+    % Generate filenames for saving data
+    parcelsFileName = sprintf('./data/%s__parcels_%s.xlsx', regionStr, nowDateStr);
+    neuronsFileName = sprintf('./data/%s__neurons_%s.xlsx', regionStr, nowDateStr);
+    axonDendriteCountsFileName = sprintf('./data/%s__axon-dendrite_counts_%s.xlsx', regionStr, nowDateStr);
+    somaLocationsFileName = sprintf('./data/%s__soma_locations_%s.xlsx', regionStr, nowDateStr);
+
+    % Write all the parcels from the morphologyMatrix structure array to an Excel file
+    writecell(morphologyMatrix.parcels', parcelsFileName);
     
-    fileNameRaw = sprintf('./output/%s_morphologyMatrix_%s_rawcounts.txt', region, ...
-        datestr(now, 'yyyymmddHHMMSS'));    
-    fileNameSoma = sprintf('./output/%s_morphologyMatrix_%s_soma.txt', region, ...
-        datestr(now, 'yyyymmddHHMMSS'));
-    
-    fid1 = fopen(fileNameRaw, 'w'); % raw counts of points per parcel
-    fid2 = fopen(fileNameSoma, 'w'); % soma locations
-    
+    % Write all the neuron types from the morphologyMatrix structure array to an Excel file
+    writecell(morphologyMatrix.neuronTypes', neuronsFileName);
+
+    % Initialize cell arrays for the axon-dendrite counts and soma locations
+    axonDendriteCountsCellArray{1, 1} = "Neurons \ Parcels";
+    somaLocationsCellArray{1, 1} = "Neurons \ Parcels";
+
+    % Populate the first row with the parcel names
     for col = 1:morphologyMatrix.nCols
-        fprintf(fid1, ';%s', cell2mat(morphologyMatrix.parcels(col)));
-        fprintf(fid2, ';%s', cell2mat(morphologyMatrix.parcels(col)));
+        axonDendriteCountsCellArray{1, col+1} = morphologyMatrix.parcels{col};
+        somaLocationsCellArray{1, col+1} = morphologyMatrix.parcels{col};
     end % col
-    fprintf(fid1, '\n');
-    fprintf(fid2, '\n');
-    
-    for row = 1:morphologyMatrix.nRows
-    
-        % raw counts of points per parcel
-        fprintf(fid1, '%s [A]', cell2mat(morphologyMatrix.neuronTypes(row)));
-        for col = 1:morphologyMatrix.nCols
-            %if (col > 1)
-            fprintf(fid1, ';%d', morphologyMatrix.axonCounts(row, col));
-            %else
-            %    temp = sprintf(';%d', morphologyMatrix.axonCounts(row, col));
-            %    disp(temp);
-            %end
-        end % col
-        fprintf(fid1, '\n');
 
-        fprintf(fid1, '%s [D]', cell2mat(morphologyMatrix.neuronTypes(row)));
+    % Populate cell arrays with the axon-dendrite counts and soma locations
+    for row = 1:morphologyMatrix.nRows
+
+        % Axonal and dendritic counts of points per parcel
+        axonDendriteCountsCellArray{2*row, 1} = [morphologyMatrix.neuronTypes{row}, ' [A]'];
         for col = 1:morphologyMatrix.nCols
-            %if (col > 1)
-            fprintf(fid1, ';%d', morphologyMatrix.dendriteCounts(row, col));
-            %else
-            %    temp2 = sprintf(';%d', morphologyMatrix.dendriteCounts(row, col));
-            %    disp(temp2);
-            %end
+            axonDendriteCountsCellArray{2*row, col+1} = morphologyMatrix.axonCounts(row, col);
         end % col
-        fprintf(fid1, '\n');
+
+        axonDendriteCountsCellArray{2*row+1, 1} = [morphologyMatrix.neuronTypes{row}, ' [D]'];
+        for col = 1:morphologyMatrix.nCols
+            axonDendriteCountsCellArray{2*row+1, col+1} = morphologyMatrix.dendriteCounts(row, col);
+        end % col
         
-        % soma locations
-        fprintf(fid2, '%s', cell2mat(morphologyMatrix.neuronTypes(row)));
+        % Soma locations
+        somaLocationsCellArray{row+1, 1} = morphologyMatrix.neuronTypes{row};
         for col = 1:morphologyMatrix.nCols
-            %if (col > 1)
-             if (morphologyMatrix.somaCounts(row, col) >= 1)
-                fprintf(fid2, ';1');
-             else
-                fprintf(fid2, ';0');
-             end
-            %end
+            if morphologyMatrix.somaCounts(row, col) >= 1
+                somaLocationsCellArray{row+1, col+1} = 1;
+            else
+                somaLocationsCellArray{row+1, col+1} = 0;
+            end
         end % col
-        fprintf(fid2, '\n');
 
     end % row
     
-    fclose(fid1);
-    fclose(fid2);
-    
+    % Write the axon-dendrite counts to an Excel file
+    writecell(axonDendriteCountsCellArray, axonDendriteCountsFileName);
+
+    % Write the soma locations to an Excel file
+    writecell(somaLocationsCellArray, somaLocationsFileName);
+
 end % save_morphology_matrix()

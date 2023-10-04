@@ -4,7 +4,7 @@ function choice = select_normalization()
                 'column_normalized', ...
                 'row_normalized', ...
                 'tract_normalized', ...
-                'binormalized'};
+                'bi-normalized'};
 
     reply = [];
     
@@ -21,7 +21,7 @@ function choice = select_normalization()
         fprintf('\t2) Column Normalized\n');
         fprintf('\t3) Row Normalized\n');
         fprintf('\t4) Tract Normalized\n');
-        fprintf('\t5) Binormalized\n');
+        fprintf('\t5) Bi-normalized\n');
         fprintf('\t!) Exit\n');
         
         reply = input('\nYour selection: ', 's');

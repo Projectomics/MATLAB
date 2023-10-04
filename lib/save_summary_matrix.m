@@ -1,51 +1,47 @@
-function save_summary_matrix(morphologyMatrix)
+function save_summary_matrix(morphologyMatrix, region)
    
-    fileNameRaw = sprintf('./output/summary_%s.txt', ...
-        datestr(now, 'yyyymmddHHMMSS'));    
+    fprintf('Saving axonal invasion summary ...\n');
+
+    fileName = sprintf('./output/%s_axonal_invasions_summary_%s.xlsx', region, datetime('now', 'Format', 'yyyyMMddHHmmSS'));    
     
-    fid1 = fopen(fileNameRaw, 'w'); % raw counts of points per parcel
-    
-    for col = 1:morphologyMatrix.nCols
-        fprintf(fid1, ';%s', cell2mat(morphologyMatrix.parcels(col)));
+    nCols = morphologyMatrix.nCols;
+
+    axonalInvasionsSummary{1}(1, 1) = {'Summary \ Parcels'};
+    for col = 1:nCols
+        axonalInvasionsSummary{1}(1, col+1) = morphologyMatrix.parcels(col);
     end % col
-    fprintf(fid1, '\n');
     
-    fprintf(fid1, 'Total Somata in Parcel');
+    axonalInvasionsSummary{1}(2, 1) = {'Total Somata in Parcel'};
     totalSomata = sum(morphologyMatrix.somaCounts);
-    for i = 1:morphologyMatrix.nCols  
-       fprintf(fid1, ';%d', totalSomata(i)); 
+    for col = 1:morphologyMatrix.nCols
+        axonalInvasionsSummary{1}(2, col+1) = {totalSomata(col)};
     end     
-    fprintf(fid1, '\n');
     
-    fprintf(fid1, 'Total Regions Invaded by Axons of Neurons in Parcel');
-    for i = 1:morphologyMatrix.nCols
-        fprintf(fid1, ';%d', morphologyMatrix.numAxonInvasions(i));
+    axonalInvasionsSummary{1}(3, 1) = {'Total Regions Invaded by Axons of Neurons in Parcel'};
+    for col = 1:morphologyMatrix.nCols
+        axonalInvasionsSummary{1}(3, col+1) = {morphologyMatrix.numAxonInvasions(col)};
     end
-    fprintf(fid1, '\n');
     
-    fprintf(fid1, 'Max Regions Invaded by Axons of Neurons in Parcel');
-    for i = 1:morphologyMatrix.nCols
-        fprintf(fid1, ';%d', morphologyMatrix.maxAxonInvasions(i));
+    axonalInvasionsSummary{1}(4, 1) = {'Maximum Number of Regions Invaded by Axons of Neurons in Parcel'};
+    for col = 1:morphologyMatrix.nCols
+        axonalInvasionsSummary{1}(4, col+1) = {morphologyMatrix.maxAxonInvasions(col)};
     end
-    fprintf(fid1, '\n'); 
     
-    fprintf(fid1, 'Min Regions Invaded by Axons of Neurons in Parcel');
-    for i = 1:morphologyMatrix.nCols
-        fprintf(fid1, ';%d', morphologyMatrix.minAxonInvasions(i));
+    axonalInvasionsSummary{1}(5, 1) = {'Minimum Number of Regions Invaded by Axons of Neurons in Parcel'};
+    for col = 1:morphologyMatrix.nCols
+        axonalInvasionsSummary{1}(5, col+1) = {morphologyMatrix.minAxonInvasions(col)};
     end
-    fprintf(fid1, '\n'); 
     
-    fprintf(fid1, 'Mean Regions Invaded by Axons of Neurons in Parcel');
-    for i = 1:morphologyMatrix.nCols
-        fprintf(fid1, ';%d', morphologyMatrix.meanAxonInvasions(i));
+    axonalInvasionsSummary{1}(6, 1) = {'Mean of Regions Invaded by Axons of Neurons in Parcel'};
+    for col = 1:morphologyMatrix.nCols
+        axonalInvasionsSummary{1}(6, col+1) = {morphologyMatrix.meanAxonInvasions(col)};
     end
-    fprintf(fid1, '\n');  
     
-    fprintf(fid1, 'St. Dev Regions Invaded by Axons of Neurons in Parcel');
-    for i = 1:morphologyMatrix.nCols
-        fprintf(fid1, ';%d', morphologyMatrix.stdAxonInvasions(i));
+    axonalInvasionsSummary{1}(7, 1) = {'Standard Deviation of Regions Invaded by Axons of Neurons in Parcel'};
+    for col = 1:morphologyMatrix.nCols
+        axonalInvasionsSummary{1}(7, col+1) = {morphologyMatrix.stdAxonInvasions(col)};
     end
-            
-    fclose(fid1);
+
+    writecell(axonalInvasionsSummary{1}, fileName);
     
 end 

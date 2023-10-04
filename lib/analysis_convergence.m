@@ -1,33 +1,43 @@
-function analysis_convergence(clusterMatrix, region)
+function analysis_convergence(clusterMatrix, convergingParcelsCellArray, regionStr)
 
     addpath('./lib/');
     addpath('./lib/jsonlab-1.5');
-        
-    dispStr = sprintf('Enter parcel(s) for analysis (input ! to exit)');
-    disp(dispStr);
 
-    reply = [];
-    parcelIndex = 1;
-    while (isempty(reply) | reply ~= '!')
-       reply = input('\nYour selection: ', 's');
-        if ~strcmp(reply, '!')
-            count = 1;
-            h1 = strcat('(I) ', reply);
-            h2 = strcat('(C) ', reply);
-            parcelArray{parcelIndex} = h1;
-            parcelIndex = parcelIndex+1;
-            parcelArray{parcelIndex} = h2;
-            parcelIndex = parcelIndex+1;
-        end  
-    end
-    if(count == 0)
-       disp('Exiting'); 
-    else
-        nParcels = length(parcelArray);
-        for i = 1:nParcels
-           parcel = parcelArray{i};
-           convergence_get_length_updated(clusterMatrix, parcel, region);
-        end
-    end            
+    nConvergingParcels = length(convergingParcelsCellArray);
+
+    convergingParcelIpsiVsContralateralCellArray = cell(2*nConvergingParcels);
+
+    for i = 1:nConvergingParcels
+
+        convergingParcelIpsiVsContralateralCellArray{(2*i)-1} = strcat('(I) ', convergingParcelsCellArray{i});
+        convergingParcelIpsiVsContralateralCellArray{(2*i)} = strcat('(C) ', convergingParcelsCellArray{i});
     
+    end
+
+    nClusters = size(clusterMatrix, 1);
+    clusterNames = cell(nClusters);
+
+    for c = 1:nClusters
+
+        tempNeurons = clusterMatrix(c, :);
+        nNeurons = 0;
+        for n = 1:length(tempNeurons)
+            if ~sum(cell2mat(cellfun(@ismissing, tempNeurons(n), 'UniformOutput', false)))
+                nNeurons = nNeurons + 1;
+            end
+        end
+        clusterNames{c} = sprintf('%c%d', char(65+nClusters-c), nNeurons);
+
+    end % c (nClusters)
+
+    for i = 1:(2*nConvergingParcels)
+       convergingParcel = convergingParcelIpsiVsContralateralCellArray{i};
+
+       [distancesToAllPointsInParcelArray, nowDateStr] = convergence_get_length(clusterMatrix, ...
+           convergingParcel, regionStr, clusterNames);
+
+       analyze_path_distances_using_Wilcoxon_test_and_FDR(distancesToAllPointsInParcelArray, ...
+           clusterNames, convergingParcel, nowDateStr, regionStr);
+    end % i
+
 end % analysis_convergence()

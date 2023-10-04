@@ -43,7 +43,7 @@ function get_regions(fileName, threshold)
     end
     
     fileName = sprintf('./output/getRegionsThresh%d_%s.csv', threshold, ...
-        datestr(now, 'yyyymmddHHMMSS'));   
+        datetime('now', 'Format', 'yyyyMMddHHmmSS'));   
     fid = fopen(fileName, 'w');
     fprintf(fid, 'Regions Surpassing Threshold %d', threshold);
     for i = 1:length(regions)

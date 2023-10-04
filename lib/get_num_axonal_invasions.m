@@ -1,23 +1,24 @@
-function morphologyMatrix = get_num_invasions(groupings, morphologyMatrix)
+function morphologyMatrix = get_num_axonal_invasions(groupings, morphologyMatrix)
+
     morphologyMatrix.numAxonInvasions = zeros(1, morphologyMatrix.nCols);
     morphologyMatrix.maxAxonInvasions = zeros(1, morphologyMatrix.nCols);
     morphologyMatrix.minAxonInvasions = zeros(1, morphologyMatrix.nCols);
     morphologyMatrix.meanAxonInvasions = zeros(1, morphologyMatrix.nCols);
     morphologyMatrix.stdAxonInvasions = zeros(1, morphologyMatrix.nCols);
     
-    [rows, cols] = size(groupings.neurons);
+    nCols = size(groupings.neurons, 2);
     for i = 1:morphologyMatrix.nCols
         regionNeurons = [];
         regionNeuronsIndex = 1;   
         indivInvasions = [];
         indivInvasionsIndex = 1;
-        for j = 1:cols
-           if(strcmpi(groupings.neurons(i,j), ''))
+        for j = 1:nCols
+           if (strcmpi(groupings.neurons(i,j), ''))
                 break;
            else
                str = groupings.neurons(i, j);
                num = str2num(extractAfter(str, 2));
-               if(num > 1094)
+               if (num > 1094)
                    num = 1094;
                end
                regionNeurons(regionNeuronsIndex) = num;
@@ -27,7 +28,7 @@ function morphologyMatrix = get_num_invasions(groupings, morphologyMatrix)
            end
         end
         
-        if(length(regionNeurons)==0)
+        if (length(regionNeurons)==0)
             morphologyMatrix.numAxonInvasions(i) = 0;
             morphologyMatrix.maxAxonInvasions(i) = 0;
             morphologyMatrix.minAxonInvasions(i) = 0;
@@ -49,5 +50,6 @@ function morphologyMatrix = get_num_invasions(groupings, morphologyMatrix)
             morphologyMatrix.stdAxonInvasions(i) = std(indivInvasions);
         end  
         
-    end     
-end
+    end % i
+
+end % get_num_axonal_invasions

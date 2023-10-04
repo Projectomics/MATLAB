@@ -88,7 +88,7 @@ function fileName = shuffle_raw_laterality(inputFile, region, filteredRawMatrix,
     tag = 'fullyShuffled';
     disp(sprintf('Total times swapped: %d', count));
 
-    nowStr = datestr(now, 'yyyymmddHHMMSS');
+    nowDateStr = datetime('now', 'Format', 'yyyyMMddHHmmSS');
 
     filePath = './output/';
     fileName = sprintf('%s_matrix_%s_%s.csv', region, tag, nowStr);

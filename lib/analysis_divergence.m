@@ -1,48 +1,42 @@
-function analysis_divergence(clusterMatrix, region)
+function analysis_divergence(clusterMatrix, regionStr)
 
     addpath('./lib/');
-    addpath('./lib/jsonlab-1.5');
+    
+    nClusters = size(clusterMatrix, 1);
+    
+    for clusterNo = 1:nClusters
 
-    % Select JSON files to load
-    neuronJsonFiles = dir('./data/Mouse_Neurons/MouseLight-neurons/*.json');
-    
-    [nRows, nCols] = size(clusterMatrix);
-    
-    for r = 1:nRows
-        tempNeurons = clusterMatrix(r, :);
-        for c = 1:length(tempNeurons)
-           if(strcmpi(tempNeurons(c), ''))
-              break;
-           else
-               clusterNeurons(c) = tempNeurons(c);
-           end
+        tempNeurons = clusterMatrix(clusterNo, :);
+        nNeurons = 0;
+        for neuronNo = 1:length(tempNeurons)
+            if ~sum(cell2mat(cellfun(@ismissing, tempNeurons(neuronNo), 'UniformOutput', false)))
+                nNeurons = nNeurons + 1;
+            end
         end
+        neuronArray = tempNeurons(1:nNeurons);
+
+        clusterName = sprintf('%c%d', char(65+nClusters-clusterNo), nNeurons);
+
+        targetedParcelsFileName = sprintf('./data/%s__divergence_parcels__cluster%s', regionStr, clusterName);
+        targetedParcelsCellArray = readcell(targetedParcelsFileName);
+
+        nTargetedParcels = length(targetedParcelsCellArray);
+
+        targetedParcelIpsiVsContralateralCellArray = cell(2*nTargetedParcels, 1);
+
+        for i = 1:nTargetedParcels
+
+            targetedParcelIpsiVsContralateralCellArray{(2*i)-1} = strcat('(I) ', targetedParcelsCellArray{i});
+            targetedParcelIpsiVsContralateralCellArray{(2*i)} = strcat('(C) ', targetedParcelsCellArray{i});
         
-        dispStr = sprintf('Enter list of parcels for analysis for cluster %s (input ! to exit)', num2str(r));
-        disp(dispStr);
-        
-        reply = [];
-        parcelIndex = 1;
-        while (isempty(reply) | reply ~= '!')
-           reply = input('\nYour selection: ', 's');
-            if ~strcmp(reply, '!')
-                count = 1;
-                h1 = strcat('(I) ', reply);
-                h2 = strcat('(C) ', reply);
-                parcelArray{parcelIndex} = h1;
-                parcelIndex = parcelIndex+1;
-                parcelArray{parcelIndex} = h2;
-                parcelIndex = parcelIndex+1;
-            end  
         end
-        if(count == 0)
-           disp('Exiting'); 
-        else
-            divergence_get_length_updated(clusterNeurons, parcelArray, region);
-        end          
-        
-        clear clusterNeurons;
-        clear parcelArray;
-    end    
+
+        divergence_get_length(neuronArray, targetedParcelIpsiVsContralateralCellArray, regionStr, ...
+            clusterName);
+
+        clear neuronArray;
+        clear targetedParcelIpsiVsContralateralCellArray;
+
+    end % r (nRows)
     
 end % analysis_divergence()

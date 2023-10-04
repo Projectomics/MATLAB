@@ -29,7 +29,7 @@ function morphologyMatrix = load_region_files(regionNeurons, region)
     morphologyMatrix.matchedSomaLocations = {'parcelName'};
     
     fileName = sprintf('./output/neuronIds_%s_%s.csv', region, ...
-        datestr(now, 'yyyymmddHHMMSS'));   
+        datetime('now', 'Format', 'yyyyMMddHHmmSS'));   
     fid = fopen(fileName, 'w');
         
     for i = 1:nFiles
