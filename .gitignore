@@ -10,3 +10,8 @@ MATLAB/
 *.asv
 data/.DS_Store/
 data/Mouse_Neurons/.DS_Store/
+output/~$branch_statistics_per_branch__20230928140567.xlsx
+output/~$branch_statistics_per_neuron__20230928140567.xlsx
+output/.DS_Store
+data/Mouse_Neurons/.DS_Store
+data/.DS_Store
