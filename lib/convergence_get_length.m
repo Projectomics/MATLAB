@@ -90,7 +90,7 @@ function [distancesToAllPointsInParcelArray, nowDateStr] = convergence_get_lengt
     
     nowDateStr = datetime('now', 'Format', 'yyyyMMddHHmmSS');
 
-    convergenceLengthsFileName = sprintf('./output/%s_convergence_lengths_%s_%s.xlsx', regionStr, convergingParcel, nowDateStr);
+    convergenceLengthsFileName = sprintf('./output/%s__convergence_lengths__%s_%s.xlsx', regionStr, convergingParcel, nowDateStr);
 
     for clusterNo = 1:nClusters
         convergenceLengthsCellMatrix{1}(1, clusterNo) = clusterNames(clusterNo);

@@ -3,7 +3,7 @@ function analyze_path_distances_using_Wilcoxon_test_and_FDR(pathDistances, heade
     nCols = size(pathDistances, 2);
     nTests = nCols*(nCols-1)/2;
 
-    outputFile = sprintf('./output/%s_%s_Wilcoxon_and_FDR_%s.xlsx', regionStr, labelStr, nowDateStr);
+    outputFile = sprintf('./output/%s__%s__Wilcoxon_and_FDR_%s.xlsx', regionStr, labelStr, nowDateStr);
 
     c = 0;
 

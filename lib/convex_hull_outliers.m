@@ -154,7 +154,7 @@ function convex_hull_outliers(clusterMatrix, regionStr)
 
     nowDateStr = datetime('now', 'Format', 'yyyyMMddHHmmSS');
     
-    clusterStr = sprintf('_cluster%s_and_cluster%s_convex_hulls_with_outliers_%s', clusterNames{cluster1}, ...
+    clusterStr = sprintf('__cluster%s_and_cluster%s__convex_hulls_with_outliers_%s', clusterNames{cluster1}, ...
         clusterNames{cluster2}, nowDateStr);
     str = strcat('./output/', regionStr, clusterStr);
     saveas(gcf, str);
@@ -172,7 +172,7 @@ function convex_hull_outliers(clusterMatrix, regionStr)
     ylabel('y','FontSize',13);
     title('Point sets','FontSize',13)
     axis equal
-    clusterStr = sprintf('_cluster%s_and_cluster%s_somata_locations_%s', clusterNames{cluster1}, ...
+    clusterStr = sprintf('__cluster%s_and_cluster%s__somata_locations_%s', clusterNames{cluster1}, ...
         clusterNames{cluster2}, nowDateStr);   
     str = strcat('./output/', regionStr, clusterStr);
     saveas(gcf, str);
@@ -202,7 +202,7 @@ function convex_hull_outliers(clusterMatrix, regionStr)
     ylabel('y','FontSize',13);
     zlabel('z','FontSize',13);
     title('Points of the 2nd point set belonging to the intersection','FontSize',13)
-    clusterStr = sprintf('_cluster%s_somata_locations_in_intersection_with_cluster%s_%s', ...
+    clusterStr = sprintf('__cluster%s_somata_locations_in_intersection_with_cluster%s_%s', ...
         clusterNames{cluster2}, clusterNames{cluster1}, nowDateStr);   
     str = strcat('./output/', regionStr, clusterStr);
     saveas(gcf, str);
@@ -221,7 +221,7 @@ function convex_hull_outliers(clusterMatrix, regionStr)
     xlabel('x','FontSize',13);
     ylabel('y','FontSize',13);
     title('Points of the 1st point set belonging to the intersection','FontSize',13)
-    clusterStr = sprintf('_cluster%s_somata_locations_in_intersection_with_cluster%s_%s', ...
+    clusterStr = sprintf('__cluster%s_somata_locations_in_intersection_with_cluster%s_%s', ...
         clusterNames{cluster1}, clusterNames{cluster2}, nowDateStr);   
     str = strcat('./output/', regionStr, clusterStr);
     saveas(gcf, str);
@@ -242,7 +242,7 @@ function convex_hull_outliers(clusterMatrix, regionStr)
     xlabel('x','FontSize',13);
     ylabel('y','FontSize',13);
     title('Intersection of two point sets','FontSize',13)
-    clusterStr = sprintf('_somata_locations_in_intersection_of_cluster%s_and_cluster%s_%s', ...
+    clusterStr = sprintf('__somata_locations_in_intersection_of_cluster%s_and_cluster%s_%s', ...
         clusterNames{cluster1}, clusterNames{cluster2}, nowDateStr);   
     str = strcat('./output/', regionStr, clusterStr);
     saveas(gcf, str);
@@ -268,7 +268,7 @@ function convex_hull_outliers(clusterMatrix, regionStr)
     
     fprintf('\nOverlap volume = %f%%\n', 100*proportion);
 
-    percentageStr = sprintf('./output/%s_overlap_volume_of_cluster%s_and_cluster%s_is_%d_percent_%s.txt', ...
+    percentageStr = sprintf('./output/%s__overlap_volume_of_cluster%s_and_cluster%s_is_%d_percent_%s.txt', ...
         regionStr, clusterNames{cluster1}, clusterNames{cluster2}, round(100*proportion), nowDateStr);
     fid = fopen(percentageStr, 'w');
     fprintf(fid, '%f%%', 100*proportion);

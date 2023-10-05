@@ -77,7 +77,7 @@ function divergence_get_length(neuronArray, parcelArray, regionName, clusterName
     end % i (nParcels)
     
     nowDateStr = datetime('now', 'Format', 'yyyyMMddHHmmSS');
-    divergenceLengthsPerClusterFileName = sprintf('./output/%s_divergence_lengths_for_cluster%s_%s.xlsx', ...
+    divergenceLengthsPerClusterFileName = sprintf('./output/%s__divergence_lengths__for_cluster%s_%s.xlsx', ...
         regionName, clusterName, nowDateStr);
 
     divergenceLengthsPerCluster{1}(1, 1) = {'Neurons \ Targeted Parcels'};
@@ -143,5 +143,5 @@ function divergence_get_length(neuronArray, parcelArray, regionName, clusterName
 
     analyze_path_distances_using_Wilcoxon_test_and_FDR(distancesToAllPointsInParcelArray, parcelArray, ...
         labelStr, nowDateStr, regionName);
-        
+       
 end % divergence_get_length()
