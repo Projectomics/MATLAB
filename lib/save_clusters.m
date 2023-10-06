@@ -15,7 +15,6 @@ function neuronNamesByClusterFileName = save_clusters(clusters, nShufflesLabel)
     neuronNamesStrArray = readcell(neuronNamesFileName);
 
     % Define filenames for saving cluster information
-    neuronNumbersByClusterFileName = sprintf('./output/%s__neuron_numbers_by_cluster_%s.xlsx', nShufflesLabel, nowDateStr);   
     neuronNamesByClusterFileName = sprintf('./output/%s__neuron_names_by_cluster_%s.xlsx', nShufflesLabel, nowDateStr);
     divergenceFileName = sprintf('./data/divergence__%s__neuron_names_by_cluster_%s.xlsx', nShufflesLabel, nowDateStr);
     convergenceFileName = sprintf('./data/convergence__%s__neuron_names_by_cluster_%s.xlsx', nShufflesLabel, nowDateStr);
@@ -41,7 +40,6 @@ function neuronNamesByClusterFileName = save_clusters(clusters, nShufflesLabel)
     end % row
     
     % Copy neuronNamesByClusterFileName to other filenames for different analyses
-    copyfile(neuronNamesByClusterFileName, neuronNumbersByClusterFileName);
     copyfile(neuronNamesByClusterFileName, divergenceFileName);
     copyfile(neuronNamesByClusterFileName, convergenceFileName);
     copyfile(neuronNamesByClusterFileName, somataFileName);

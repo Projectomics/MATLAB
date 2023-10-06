@@ -62,7 +62,7 @@ function create_scaled_histogram(origInput, randInput, regionStr, nowDateStr)
         % variance of the randomized angle data is less than that of the
         % original angle data
         matrix = [origAngles(:), randAngles(:)];
-        [p, statistics] = vartestn(matrix, 'TestType', 'LeveneAbsolute', 'Display', 'off');
+        [p, statistics] = vartestn(matrix, 'TestType', 'LeveneAbsolute', 'Display', 'off')
 
         % Perform legend handling
         if (p <= 0.001)
@@ -95,7 +95,13 @@ function create_scaled_histogram(origInput, randInput, regionStr, nowDateStr)
     pValueFileName = sprintf('./output/%s__histogram__Levene_p_value_%s.xlsx', regionStr, nowDateStr);
     writematrix(p, pValueFileName);
 
+    LeveneStatistics = cell(2, 2);
+    LeveneStatistics(1, 1) = {'fstat'};
+    LeveneStatistics(1, 2) = {statistics.fstat};
+    LeveneStatistics(2, 1) = {'df'};
+    LeveneStatistics(2, 2) = {sprintf('[%d %d]', statistics.df(1), statistics.df(2))};
+
     statisticsFileName = sprintf('./output/%s__histogram__Levene_statistics_%s.xlsx', regionStr, nowDateStr);
-    writestruct(statistics, statisticsFileName);
+    writecell(LeveneStatistics, statisticsFileName);
 
 end % create_scaled_histogram()

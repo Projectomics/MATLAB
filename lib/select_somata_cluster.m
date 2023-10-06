@@ -10,7 +10,7 @@ function choice = select_somata_cluster(clusterNames, nthPosition)
         
         clc;
         
-        fprintf('Please select the %s cluster for somataic analysis from the selections below:\n\n', nthPosition);
+        fprintf('Please select the %s cluster for somatic analysis from the selections below:\n\n', nthPosition);
         
         for i = 1:nClusterNames
             fprintf('%6d) %s\n', i, clusterNames{i});

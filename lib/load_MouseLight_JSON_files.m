@@ -5,9 +5,6 @@ function morphologyMatrix = load_MouseLight_JSON_files(nowDateStr)
     addpath('./lib/');
     addpath('./lib/jsonlab-1.5');
 
-    % Clear all variables to start fresh
-    clear all;
-
     % Define the directory containing JSON files to load
     neuronJsonFiles = dir('./data/Mouse_Neurons/MouseLight-neurons/*.json');
     

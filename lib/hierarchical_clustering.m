@@ -45,6 +45,31 @@ function hierarchical_clustering(anglesFileName, dataFileNameBase, nShufflesLabe
     for nClusters = 2:dim
         % Create 2D array ("groups") where neurons are divided into clusters 
         %
+        % Example: say there are 4 neurons that we want to divide into 2
+        % clusters, "groups" should look something like this 
+        % [1, 2; 3, 4] --> neurons 1+2 in row 1 are part of 1 subcluster,
+        % while neurons 3+4 in row 2 are part of the 2nd subcluster
+        %
+        % cluster() defines clusters from an agglomerative hierarchical
+        % cluster tree info
+        %
+        % MaxClust defines a maximum of nClusters clusters using
+        % 'distance' as the criterion for defining clusters
+        temp = cluster(info, 'MaxClust', nClusters);
+        groups = zeros(nClusters, dim);
+
+        % First pass through, length(temp) = dim = number of neurons
+        for i = 1:dim
+            row = temp(i);
+            for j = 1:dim
+                if (groups(row, j) == 0)
+                    col = j;
+                    break;
+                end
+            end
+            groups(row, col) = i;
+        end
+
         % Call all functions on each subcluster UNLESS the neurons from the
         % subcluster are already found in insigClusters
         for clusterNo = 1:nClusters

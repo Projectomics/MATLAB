@@ -6,6 +6,8 @@ function save_axonal_counts_per_parcel_per_cluster(neuronNamesByClusterFileName,
     % Read neuron names by cluster from the specified file
     neuronNamesByClusterCellArray = readcell(neuronNamesByClusterFileName);
 
+    nClusters = size(neuronNamesByClusterCellArray, 1);
+
     % Extract dimensions of the original matrix with labels
     [nNeuronsPlusOne, nParcelsPlusOne] = size(originalMatrixWithLabels);
 

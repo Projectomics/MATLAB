@@ -32,15 +32,6 @@ function main_menu_selector(varargin)
         % Excel file
         filteredRawMatrix = filter_matrix(morphologyMatrix, 'ALL', nowDateStr);
         save_axonal_counts_per_parcel(filteredRawMatrix, 'ALL', nowDateStr);
-        
-%         groupings = sort_brain_regions(morphologyMatrix); 
-%         save_neurons_sorted_by_region(groupings, 'ALL', nowDateStr);
-%         
-%         groupings = sort_brain_parcels(morphologyMatrix); 
-%         save_neurons_sorted_by_parcel(groupings, 'ALL', nowDateStr);
-% 
-%         morphologyMatrix = get_num_axonal_invasions(groupings, morphologyMatrix);
-%         save_summary_matrix(morphologyMatrix, 'ALL');
      
     elseif strcmp(choice, 'Shuffle Data')
 

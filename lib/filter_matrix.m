@@ -35,7 +35,7 @@ function filteredMatrix = filter_matrix(morphologyMatrix, regionStr, nowDateStr)
     filteredMatrix.nCols = filteredCol - 1;
     
     % Generate a filename for saving the filtered parcel names
-    fileName = sprintf('./output/%s_filtered_parcels_%s.xlsx', regionStr, nowDateStr);
+    fileName = sprintf('./output/%s__filtered_parcels_%s.xlsx', regionStr, nowDateStr);
     
     % Write the filtered parcel names to an Excel file
     writecell(filteredMatrix.parcels', fileName);
