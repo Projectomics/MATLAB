@@ -12,12 +12,12 @@ function analyze_path_distances_using_Wilcoxon_test_and_FDR(pathDistances, heade
     for i = 1:nCols
         for j = i+1:nCols
 
-%             p = 1;
-            if (~isempty(pathDistances{i}) && ~isempty(pathDistances{j}))
+            c = c + 1;
 
-                c = c + 1;
+            if (isempty(pathDistances{i}) || isempty(pathDistances{j}))
+                p(c) = 1;
+            else
                 p(c) = ranksum(pathDistances{i}, pathDistances{j});
-
             end
 
         end % j
@@ -73,17 +73,25 @@ function analyze_path_distances_using_Wilcoxon_test_and_FDR(pathDistances, heade
                 ranksumStatistics{1}(4, 2) = num2cell(quantile(pathDistances{i},0.75));
                 ranksumStatistics{1}(4, 3) = num2cell(quantile(pathDistances{j},0.75));
 
-                ranksumStatistics{1}(5, 1) = {'N'};
-                ranksumStatistics{1}(5, 2) = num2cell(sum(isfinite(pathDistances{i})));
-                ranksumStatistics{1}(5, 3) = num2cell(sum(isfinite(pathDistances{j})));
+                ranksumStatistics{1}(5, 1) = {'Minimum'};
+                ranksumStatistics{1}(5, 2) = num2cell(min(pathDistances{i}));
+                ranksumStatistics{1}(5, 3) = num2cell(min(pathDistances{j}));
 
-                ranksumStatistics{1}(6, 1) = {'p'};
-                ranksumStatistics{1}(6, 2) = num2cell(p);                
+                ranksumStatistics{1}(6, 1) = {'Maximum'};
+                ranksumStatistics{1}(6, 2) = num2cell(max(pathDistances{i}));
+                ranksumStatistics{1}(6, 3) = num2cell(max(pathDistances{j}));
 
-                ranksumStatistics{1}(7, 1) = {'Significance'};
-                ranksumStatistics{1}(7, 2) = {significanceStr};
+                ranksumStatistics{1}(7, 1) = {'N'};
+                ranksumStatistics{1}(7, 2) = num2cell(sum(isfinite(pathDistances{i})));
+                ranksumStatistics{1}(7, 3) = num2cell(sum(isfinite(pathDistances{j})));
 
-                ranksumStatistics{1}(8, 1) = {' '};
+                ranksumStatistics{1}(8, 1) = {'p'};
+                ranksumStatistics{1}(8, 2) = num2cell(p);                
+
+                ranksumStatistics{1}(9, 1) = {'Significance'};
+                ranksumStatistics{1}(9, 2) = {significanceStr};
+
+                ranksumStatistics{1}(10, 1) = {' '};
 
                 writecell(ranksumStatistics{1}, outputFile, 'WriteMode', 'append');
 

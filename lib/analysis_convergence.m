@@ -36,8 +36,35 @@ function analysis_convergence(clusterMatrix, convergingParcelsCellArray, regionS
        [distancesToAllPointsInParcelArray, nowDateStr] = convergence_get_length(clusterMatrix, ...
            convergingParcel, regionStr, clusterNames);
 
-       analyze_path_distances_using_Wilcoxon_test_and_FDR(distancesToAllPointsInParcelArray, ...
-           clusterNames, convergingParcel, nowDateStr, regionStr);
+        maxBoxPlot = 0;
+        nPointsInParcelArray = length(distancesToAllPointsInParcelArray);
+        for j = 1:nPointsInParcelArray
+            maxPointsInParcelArray(j) = length(distancesToAllPointsInParcelArray{j});
+            if (maxPointsInParcelArray(j) > maxBoxPlot)
+                maxBoxPlot = maxPointsInParcelArray(j);
+            end
+        end
+    
+        boxPlotMatrix = NaN(maxBoxPlot, nPointsInParcelArray);
+    
+        for j = 1:nPointsInParcelArray
+            boxPlotMatrix(1:maxPointsInParcelArray(j), j) = cell2mat(distancesToAllPointsInParcelArray(j));
+        end
+    
+        figure(i);
+        boxplot(boxPlotMatrix);
+
+        boxplotFilename = sprintf('./output/%s__convergence_box_and_whisker_plot__%s_%s.fig', ...
+            regionStr, convergingParcel, nowDateStr);
+        saveas(gcf, boxplotFilename);
+        
+        pngPlotFileName = sprintf('./output/%s__convergence_box_and_whisker_plot__%s_%s.png', ...
+            regionStr, convergingParcel, nowDateStr);
+        print(gcf, '-dpng', '-r800', pngPlotFileName);
+        
+        analyze_path_distances_using_Wilcoxon_test_and_FDR(distancesToAllPointsInParcelArray, ...
+               clusterNames, convergingParcel, nowDateStr, regionStr);
+
     end % i
 
 end % analysis_convergence()

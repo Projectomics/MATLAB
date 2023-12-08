@@ -73,6 +73,8 @@ function divergence_get_length(neuronArray, parcelArray, regionName, clusterName
         distancesToAllPointsInParcelMedian(i) = quantile(distancesToAllPointsInParcel, 0.5);
         distancesToAllPointsInParcel1stQuartile(i) = quantile(distancesToAllPointsInParcel, 0.25);
         distancesToAllPointsInParcel3rdQuartile(i) = quantile(distancesToAllPointsInParcel, 0.75);
+        distancesToAllPointsInParcelMinimum(i) = min(distancesToAllPointsInParcel);
+        distancesToAllPointsInParcelMaximum(i) = max(distancesToAllPointsInParcel);
 
     end % i (nParcels)
     
@@ -137,8 +139,53 @@ function divergence_get_length(neuronArray, parcelArray, regionName, clusterName
         end
     end % j
 
+    fprintf(fid, 'Minimum;');
+    for j = 1:nParcels
+        if(isnan(distancesToAllPointsInParcel3rdQuartile(j)))
+            fprintf(fid, '%s;', 'NA'); 
+        else
+            fprintf(fid, '%e;', distancesToAllPointsInParcelMinimum(j));
+        end
+    end % j
+    fprintf(fid, '\n');
+
+    fprintf(fid, 'Maximum;');
+    for j = 1:nParcels
+        if(isnan(distancesToAllPointsInParcel3rdQuartile(j)))
+            fprintf(fid, '%s;', 'NA'); 
+        else
+            fprintf(fid, '%e;', distancesToAllPointsInParcelMaximum(j));
+        end
+    end % j
+    fprintf(fid, '\n');
+
     writecell(divergenceLengthsPerCluster{1}, divergenceLengthsPerClusterFileName);
 
+    maxBoxPlot = 0;
+    nPointsInParcelArray = length(distancesToAllPointsInParcelArray);
+    for i = 1:nPointsInParcelArray
+        maxPointsInParcelArray(i) = length(distancesToAllPointsInParcelArray{i});
+        if (maxPointsInParcelArray(i) > maxBoxPlot)
+            maxBoxPlot = maxPointsInParcelArray(i);
+        end
+    end
+
+    boxPlotMatrix = NaN(maxBoxPlot, nPointsInParcelArray);
+
+    for i = 1:nPointsInParcelArray
+        boxPlotMatrix(1:maxPointsInParcelArray(i), i) = distancesToAllPointsInParcelArray{i};
+    end
+
+    boxplot(boxPlotMatrix);
+    
+    boxplotFilename = sprintf('./output/%s__divergence_box_and_whisker_plot__for_cluster%s_%s.fig', ...
+        regionName, clusterName, nowDateStr);
+    saveas(gcf, boxplotFilename);
+    
+    pngPlotFileName = sprintf('./output/%s__divergence_box_and_whisker_plot__for_cluster%s_%s.png', ...
+        regionName, clusterName, nowDateStr);
+    print(gcf, '-dpng', '-r800', pngPlotFileName);
+    
     labelStr = sprintf('cluster%s', clusterName);
 
     analyze_path_distances_using_Wilcoxon_test_and_FDR(distancesToAllPointsInParcelArray, parcelArray, ...
