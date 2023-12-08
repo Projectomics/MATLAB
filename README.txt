@@ -8,4 +8,4 @@ Instructions for use: Run main_menu_selector from the main folder.
 
 Demo: All necessary files to run the software have been provided in the /data folder. Examples output files are found in the /output folder. The MOp6 data were randomized 1,000 times. The presubiculum data were randomzied 100,000 times.
 
-Licensing: This software is available under a GNU General Public License, version 3 (GPL-3.0).
+Licensing: See accompanying copyright licensing document.
