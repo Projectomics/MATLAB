@@ -160,20 +160,26 @@ function main_menu_selector(varargin)
         % Select a parcel abbreviation for tagging saved files
         parcelAbbreviation = input('\nEnter the abbreviation for the parcel being analyzed (e.g., PRE for presubiculum): ', 's');
 
-        % 
+        % Analysis of the spread of axonal projections from an originating
+        % parcel, such as the presubiculum, to parcels distributed throughout
+        % the brain.
         analysis_divergence(neuronNamesByClusterCellArray, parcelAbbreviation);
 
     elseif strcmp(choice, 'Analysis of Axonal Convergence')
 
+        % Select an Excel file name to process
         reply = select_xlsx_file_name('Please select a file of neuron names by cluster for an analysis of axonal convergence.', 'convergence');
         
+        % Exit the program when the user chooses to exit
         if strcmp(reply, '!')
             fprintf('\nExiting\n\n');
             return;
         end
 
+        % Store in a cell array the neuron names broken down by cluster
         neuronNamesByClusterCellArray = open_str_xlsx_data_file(reply);
 
+        % Select a parcel abbreviation for tagging saved files
         parcelAbbreviation = [];
         parcelAbbreviation = input('\nEnter the abbreviation for the parcel being analyzed (e.g., PRE for presubiculum): ', 's');
 
@@ -186,41 +192,58 @@ function main_menu_selector(varargin)
         end
         fclose(fid);
 
+        % Load list of convergence parcels
         parcelsCellArray = readcell(parcelsFileFullFileName);
 
+        % Analysis of the convergence of axonal connections from disparate brain
+        % parcels back onto originating parcel clusters
         analysis_convergence(neuronNamesByClusterCellArray, parcelsCellArray, parcelAbbreviation);
 
     elseif strcmp(choice, 'Soma Analysis')
 
+        % Select an Excel file name to process
         reply = select_xlsx_file_name('Please select a file of neuron names by cluster for a somatic convex hull analysis.', 'somata');
         
+        % Exit the program when the user chooses to exit
         if strcmp(reply, '!')
             fprintf('\nExiting\n\n');
             return;
         end
 
+        % Load list of neuron names organized by cluster
         neuronNamesByClusterCellArray = open_str_xlsx_data_file(reply);
 
+        % Select a parcel abbreviation for tagging saved files
         parcelAbbreviationStr = [];
         parcelAbbreviationStr = input('\nEnter the abbreviation for the parcel being analyzed (e.g., PRE for presubiculum): ', 's');
 
+        % Remove outlier points from clusters to be compared and determine the
+        % convex hull of the overlap between the clusters
         convex_hull_outliers(neuronNamesByClusterCellArray, parcelAbbreviationStr);
 
     elseif strcmp(choice, 'NNLS Analysis')
         
+        % Select an Excel file name to process
         reply = select_xlsx_file_name('Please select a file of axonal counts per parcel per cluster for non-negative least squares analysis.', 'NNLS');
         
+        % Exit the program when the user chooses to exit
         if strcmp(reply, '!')
             fprintf('\nExiting\n\n');
             return;
         end
 
+        % Load matrix of axonal counts organized by parcel and cluster
         axonalCountsPerParcelPerClusterCellArray = open_str_xlsx_data_file(reply);
 
+        % Compute the non-negative least squares of a matrix of data values with
+        % an accompanying column of tract values
         nnls(axonalCountsPerParcelPerClusterCellArray, reply);
     
     elseif strcmp(choice, 'Strahler Order Analysis of the Presubiculum')
 
+        % Function to determine the Strahler order values for all .SWC neuronal
+        % reconstructions stored in a particular file directory. Statistics are
+        % accumulated by branch order and per neuron.
         Strahler();
         
     end
@@ -228,4 +251,3 @@ function main_menu_selector(varargin)
     fprintf('\nExiting\n\n');
 
 end % main_menu_selector()
-    

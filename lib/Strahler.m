@@ -1,4 +1,7 @@
 function Strahler()
+% Function to determine the Strahler order values for all .SWC neuronal
+% reconstructions stored in a particular file directory. Statistics are
+% accumulated by branch order and per neuron.
 
     % Add necessary library paths
     addpath('./lib/');
