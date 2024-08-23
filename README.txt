@@ -8,4 +8,6 @@ Instructions for use: Run main_menu_selector from the main folder.
 
 Demo: All necessary files to run the software have been provided in the /data folder. Examples output files are found in the /output folder. The MOp6 data were randomized 1,000 times. The presubiculum data were randomzied 100,000 times.
 
+The Janelia MouseLight data in /data/Mouse_Neurons/ (and brainAreas.json) is a static download of neuronbrowser data frozen in time at publication date
+
 Licensing: See accompanying copyright licensing document.
